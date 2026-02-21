@@ -1,8 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { MAX_CONTEXT_LENGTH, MAX_API_MESSAGES } from "@/lib/constants";
 
-const client = new Anthropic();
-
 function isValidMessage(m: unknown): m is { role: string; content: string } {
   return (
     typeof m === "object" &&
@@ -47,6 +45,14 @@ export async function POST(req: Request) {
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
+
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return new Response(
+        JSON.stringify({ error: "ANTHROPIC_API_KEY is not configured. Set it in .env.local." }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+    const client = new Anthropic();
 
     const systemPrompt = `You are a Senior Marketing Operations analyst helping analyze marketing campaign and pipeline data. You have access to a complete data summary below. Answer questions with specific numbers from the data. Be direct, quantitative, and actionable.
 

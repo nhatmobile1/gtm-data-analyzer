@@ -14,7 +14,7 @@ A web application for Marketing Operations professionals to upload campaign perf
 
 | Layer | Technology | Notes |
 |-------|-----------|-------|
-| Framework | Next.js 14 (App Router) | TypeScript, SSR-capable |
+| Framework | Next.js 16 (App Router) | TypeScript, SSR-capable |
 | Styling | Tailwind CSS v4 | Dark theme, `@theme inline` syntax |
 | Charts | Recharts | BarChart, ComposedChart, FunnelChart |
 | CSV Parsing | PapaParse | Client-side parsing |
