@@ -289,6 +289,46 @@ export function useDashboardStore() {
     saveToStorage(next);
   }, []);
 
+  // ── Server migration ──
+
+  const migrateToServer = useCallback(async () => {
+    const current = storeRef.current;
+    if (current.dashboards.length === 0 && current.folders.length === 0) return false;
+
+    try {
+      // Upload folders first
+      for (const folder of current.folders) {
+        await fetch("/api/folders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: folder.name }),
+        });
+      }
+
+      // Upload dashboards
+      for (const dashboard of current.dashboards) {
+        await fetch("/api/dashboards", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: dashboard.name,
+            fileName: dashboard.fileName,
+            csvText: dashboard.csvText,
+            columns: {},
+            rowCount: dashboard.rowCount,
+            folderId: null, // Folder IDs won't match server-side
+          }),
+        });
+      }
+
+      // Clear localStorage after migration
+      clearAll();
+      return true;
+    } catch {
+      return false;
+    }
+  }, [clearAll]);
+
   return {
     dashboards: store.dashboards,
     folders: store.folders,
@@ -303,5 +343,6 @@ export function useDashboardStore() {
     removeFolder,
     clearAll,
     clearNotification,
+    migrateToServer,
   };
 }
