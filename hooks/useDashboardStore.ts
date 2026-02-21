@@ -329,6 +329,26 @@ export function useDashboardStore() {
     }
   }, [clearAll]);
 
+  // ── Import ──
+
+  const importData = useCallback(
+    (data: { dashboards: DashboardEntry[]; folders: DashboardFolder[] }) => {
+      update((prev) => {
+        const existingIds = new Set(prev.dashboards.map((d) => d.id));
+        const newDashboards = data.dashboards.filter((d) => !existingIds.has(d.id));
+        const existingFolderIds = new Set(prev.folders.map((f) => f.id));
+        const newFolders = data.folders.filter((f) => !existingFolderIds.has(f.id));
+
+        return {
+          ...prev,
+          dashboards: [...newDashboards, ...prev.dashboards].slice(0, MAX_DASHBOARDS),
+          folders: [...prev.folders, ...newFolders],
+        };
+      });
+    },
+    [update]
+  );
+
   return {
     dashboards: store.dashboards,
     folders: store.folders,
@@ -344,5 +364,6 @@ export function useDashboardStore() {
     clearAll,
     clearNotification,
     migrateToServer,
+    importData,
   };
 }

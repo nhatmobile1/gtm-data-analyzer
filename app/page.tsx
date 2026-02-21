@@ -125,6 +125,7 @@ export default function Home() {
           onFolderRename={store.renameFolder}
           onFolderRemove={store.removeFolder}
           onClearAll={store.clearAll}
+          onImport={store.importData}
         />
       </>
     );

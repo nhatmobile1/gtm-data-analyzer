@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { Upload, BarChart3, Brain, GitFork, Target } from "lucide-react";
 import type { DashboardEntry, DashboardFolder } from "@/lib/types";
+
 import DashboardBrowser from "./DashboardBrowser";
 
 interface FileUploadProps {
@@ -17,6 +18,7 @@ interface FileUploadProps {
   onFolderRename: (id: string, newName: string) => void;
   onFolderRemove: (id: string) => void;
   onClearAll: () => void;
+  onImport: (data: { dashboards: DashboardEntry[]; folders: DashboardFolder[] }) => void;
 }
 
 const FEATURES = [
@@ -54,6 +56,7 @@ export default function FileUpload({
   onFolderRename,
   onFolderRemove,
   onClearAll,
+  onImport,
 }: FileUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -181,6 +184,7 @@ export default function FileUpload({
         onFolderRename={onFolderRename}
         onFolderRemove={onFolderRemove}
         onClearAll={onClearAll}
+        onImport={onImport}
       />
 
       {/* Feature Cards */}

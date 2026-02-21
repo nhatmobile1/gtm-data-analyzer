@@ -13,6 +13,7 @@ import {
 import type { DashboardEntry, DashboardFolder } from "@/lib/types";
 import DropdownMenu, { type MenuItem } from "@/components/ui/DropdownMenu";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import ExportImport from "@/components/ui/ExportImport";
 import DashboardRow from "./DashboardRow";
 
 interface DashboardBrowserProps {
@@ -26,6 +27,7 @@ interface DashboardBrowserProps {
   onFolderRename: (id: string, newName: string) => void;
   onFolderRemove: (id: string) => void;
   onClearAll: () => void;
+  onImport: (data: { dashboards: DashboardEntry[]; folders: DashboardFolder[] }) => void;
 }
 
 export default function DashboardBrowser({
@@ -39,6 +41,7 @@ export default function DashboardBrowser({
   onFolderRename,
   onFolderRemove,
   onClearAll,
+  onImport,
 }: DashboardBrowserProps) {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set(folders.map((f) => f.id)));
@@ -118,6 +121,11 @@ export default function DashboardBrowser({
           <span className="text-xs opacity-60">({dashboards.length})</span>
         </div>
         <div className="flex items-center gap-3">
+          <ExportImport
+            dashboards={dashboards}
+            folders={folders}
+            onImport={onImport}
+          />
           <button
             onClick={() => setCreatingFolder(true)}
             className="flex items-center gap-1.5 text-xs text-accent hover:text-accent/80 transition-colors cursor-pointer"
