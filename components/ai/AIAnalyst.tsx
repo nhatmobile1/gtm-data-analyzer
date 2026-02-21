@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Send, Trash2 } from "lucide-react";
-import type { Message } from "@/lib/types";
+import type { Message, DetectedColumns } from "@/lib/types";
 
 interface AIAnalystProps {
   messages: Message[];
@@ -10,18 +10,36 @@ interface AIAnalystProps {
   streamingContent: string;
   onAsk: (question: string) => void;
   onClear: () => void;
+  columns: DetectedColumns | null;
 }
 
-const STARTER_PROMPTS = [
-  "What are the 3 most important insights about marketing performance, channel efficiency, and pipeline contribution?",
-  "Which channels are underperforming relative to their touch volume? Where should we reallocate budget?",
-  "Design a reporting framework to monitor channel efficiency over time. What metrics, cadence, and stakeholders?",
-  "What's the biggest operational or process change you'd recommend based on this data?",
-  "Analyze the drop-off between event attendance and meetings booked. What's the nurture opportunity?",
-  "Compare Account Tier performance. Are we targeting the right accounts?",
-  "What's broken with the Direct Mail program? How would you fix it?",
-  "If you were presenting this to a VP of Revenue Operations, what story would you tell?",
-];
+function generateStarterPrompts(columns: DetectedColumns | null): string[] {
+  const generic = [
+    "What are the 3 most important insights about marketing performance, channel efficiency, and pipeline contribution?",
+    "Which channels are underperforming relative to their touch volume? Where should we reallocate budget?",
+    "Design a reporting framework to monitor channel efficiency over time. What metrics, cadence, and stakeholders?",
+    "If you were presenting this to a VP of Revenue Operations, what story would you tell?",
+  ];
+
+  if (!columns) return generic;
+
+  const dynamic: string[] = [];
+
+  if (columns.channel) {
+    dynamic.push(`Which ${columns.channel} is most efficient at generating pipeline per touch?`);
+  }
+  if (columns.interactionStatus && columns.meetingBooked) {
+    dynamic.push("Analyze the drop-off between event attendance and meetings booked. What's the nurture opportunity?");
+  }
+  if (columns.dimensions.length > 0) {
+    dynamic.push(`Compare ${columns.dimensions[0]} performance. Where are the biggest gaps?`);
+  }
+  if (columns.closedWon) {
+    dynamic.push("What's the biggest operational or process change you'd recommend based on win rate data?");
+  }
+
+  return [...dynamic, ...generic].slice(0, 8);
+}
 
 function renderInlineBold(text: string): React.ReactNode {
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
@@ -93,9 +111,11 @@ export default function AIAnalyst({
   streamingContent,
   onAsk,
   onClear,
+  columns,
 }: AIAnalystProps) {
   const [input, setInput] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const starterPrompts = generateStarterPrompts(columns);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -116,7 +136,7 @@ export default function AIAnalyst({
             Ask anything about your data
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
-            {STARTER_PROMPTS.map((prompt, i) => (
+            {starterPrompts.map((prompt, i) => (
               <button
                 key={prompt}
                 onClick={() => onAsk(prompt)}
@@ -217,6 +237,7 @@ export default function AIAnalyst({
             }
           }}
           placeholder="Ask a question about your marketing data..."
+          aria-label="Ask a question about your marketing data"
           className="flex-1 bg-surface border border-border text-text py-2.5 px-3.5 rounded-lg text-[13px] font-sans outline-none focus:border-accent transition-colors"
           disabled={loading}
         />
