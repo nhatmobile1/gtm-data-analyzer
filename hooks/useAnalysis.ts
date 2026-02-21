@@ -28,6 +28,7 @@ export function useAnalysis() {
   const [selectedDim, setSelectedDim] = useState<string | null>(null);
   const [crossCutDim, setCrossCutDim] = useState<string | null>(null);
   const [parsing, setParsing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const funnel: FunnelRow[] = useMemo(() => {
     if (!rawData || !columns || !selectedDim) return [];
@@ -101,6 +102,20 @@ export function useAnalysis() {
           header: true,
           skipEmptyLines: true,
         });
+
+        if (result.errors.length > 0 && result.data.length === 0) {
+          setError(`CSV parsing failed: ${result.errors[0].message}`);
+          setParsing(false);
+          return;
+        }
+
+        if (result.data.length === 0 || !result.meta.fields?.length) {
+          setError("CSV file appears to be empty or has no headers.");
+          setParsing(false);
+          return;
+        }
+
+        setError(null);
         applyParsed(name, result.data, result.meta.fields || []);
       }, 0);
     },
@@ -115,11 +130,13 @@ export function useAnalysis() {
     setSelectedDim(null);
     setCrossCutDim(null);
     setParsing(false);
+    setError(null);
   }, []);
 
   return {
     rawData,
     parsing,
+    error,
     columns,
     headers,
     fileName,
@@ -134,6 +151,7 @@ export function useAnalysis() {
     dataContext,
     setSelectedDim,
     setCrossCutDim,
+    setError,
     loadCSVText,
     reset,
   };

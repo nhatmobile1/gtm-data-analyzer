@@ -57,17 +57,28 @@ export default function FileUpload({
 }: FileUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
       setIsDragging(false);
       const file = e.dataTransfer.files[0];
-      if (file && file.name.endsWith(".csv")) {
-        onFileSelect(file);
+      if (!file) return;
+      if (!file.name.endsWith(".csv")) {
+        setUploadError("Please upload a CSV file.");
+        return;
       }
+      if (file.size > MAX_FILE_SIZE) {
+        setUploadError("File is too large (max 10MB).");
+        return;
+      }
+      setUploadError(null);
+      onFileSelect(file);
     },
-    [onFileSelect]
+    [onFileSelect, MAX_FILE_SIZE]
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -80,9 +91,19 @@ export default function FileUpload({
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
-      if (file) onFileSelect(file);
+      if (!file) return;
+      if (!file.name.endsWith(".csv")) {
+        setUploadError("Please upload a CSV file.");
+        return;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        setUploadError("File is too large (max 10MB).");
+        return;
+      }
+      setUploadError(null);
+      onFileSelect(file);
     },
-    [onFileSelect]
+    [onFileSelect, MAX_FILE_SIZE]
   );
 
   return (
@@ -137,6 +158,12 @@ export default function FileUpload({
           onChange={handleInputChange}
         />
       </div>
+
+      {uploadError && (
+        <div className="mt-3 text-negative text-xs text-center max-w-lg">
+          {uploadError}
+        </div>
+      )}
 
       {/* Dashboard Browser */}
       <DashboardBrowser

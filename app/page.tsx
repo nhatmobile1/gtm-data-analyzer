@@ -29,6 +29,9 @@ export default function Home() {
         setActiveDashboardId(entry.id);
         analysis.loadCSVText(file.name, text);
       };
+      reader.onerror = () => {
+        analysis.setError("Failed to read the file. Please try again.");
+      };
       reader.readAsText(file);
     },
     // Depend on stable individual functions, not the entire hook objects
@@ -70,6 +73,21 @@ export default function Home() {
         <div className="text-sm text-muted">
           Parsing {analysis.fileName}...
         </div>
+      </div>
+    );
+  }
+
+  if (analysis.error) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3 px-4">
+        <div className="text-negative text-sm font-semibold">Error</div>
+        <div className="text-muted text-sm text-center max-w-md">{analysis.error}</div>
+        <button
+          onClick={() => { analysis.setError(null); analysis.reset(); }}
+          className="mt-2 py-1.5 px-4 rounded-md text-xs bg-surface border border-border text-muted hover:text-text transition-colors"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
