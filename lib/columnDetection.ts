@@ -1,4 +1,5 @@
 import type { DetectedColumns, CsvRow } from "./types";
+import { DIMENSION_MIN_UNIQUE, DIMENSION_MAX_UNIQUE } from "./constants";
 
 export function detectColumns(
   headers: string[],
@@ -104,7 +105,7 @@ export function detectColumns(
     const unique = new Set(vals);
     const isNumeric = vals.every((v) => !isNaN(parseFloat(v)));
 
-    if (!isNumeric && unique.size >= 2 && unique.size <= 40 && vals.length > 0) {
+    if (!isNumeric && unique.size >= DIMENSION_MIN_UNIQUE && unique.size <= DIMENSION_MAX_UNIQUE && vals.length > 0) {
       result.dimensions.push(h);
     }
   });

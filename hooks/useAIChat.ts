@@ -2,8 +2,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import type { Message } from "@/lib/types";
-
-const MAX_MESSAGES = 40;
+import { MAX_AI_MESSAGES } from "@/lib/constants";
 
 export function useAIChat(dataContext: string) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -47,7 +46,7 @@ export function useAIChat(dataContext: string) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             // Trim conversation history to limit token usage
-            messages: allMessages.slice(-MAX_MESSAGES),
+            messages: allMessages.slice(-MAX_AI_MESSAGES),
             dataContext: dataContextRef.current,
           }),
           signal: abortRef.current.signal,

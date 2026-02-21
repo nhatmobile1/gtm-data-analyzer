@@ -1,6 +1,7 @@
 import { Search } from "lucide-react";
 import type { DropOffResult, Totals } from "@/lib/types";
 import { formatNumber, formatPercent, formatCurrency, pct } from "@/lib/formatting";
+import { RECOVERY_RATE } from "@/lib/constants";
 import Callout from "@/components/ui/Callout";
 
 interface DropOffAnalysisProps {
@@ -28,7 +29,7 @@ export default function DropOffAnalysis({
 
   const recoveryPipeline =
     totals && totals.meetings > 0
-      ? Math.round(dropOff.noMeeting * 0.1) *
+      ? Math.round(dropOff.noMeeting * RECOVERY_RATE) *
         (totals.pipeline / totals.meetings)
       : null;
 

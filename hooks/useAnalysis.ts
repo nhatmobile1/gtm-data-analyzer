@@ -18,6 +18,7 @@ import {
   calculateTotals,
 } from "@/lib/analysis";
 import { buildDataContext } from "@/lib/dataContext";
+import { COLUMN_SAMPLE_SIZE } from "@/lib/constants";
 
 export function useAnalysis() {
   const [rawData, setRawData] = useState<CsvRow[] | null>(null);
@@ -72,7 +73,7 @@ export function useAnalysis() {
     (name: string, data: CsvRow[], hdrs: string[]) => {
       setFileName(name);
       setHeaders(hdrs);
-      const detected = detectColumns(hdrs, data.slice(0, 100));
+      const detected = detectColumns(hdrs, data.slice(0, COLUMN_SAMPLE_SIZE));
       setColumns(detected);
       setRawData(data);
       setSelectedDim(detected.channel || hdrs[0]);

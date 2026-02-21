@@ -7,6 +7,7 @@ import type {
   Totals,
 } from "./types";
 import { pct } from "./formatting";
+import { MIN_TOUCHES_THRESHOLD, VARIANCE_STRONG, VARIANCE_MODERATE } from "./constants";
 
 // --- Internal helpers ---
 
@@ -153,7 +154,7 @@ export function analyzeDropOff(
 
 export function calculateVariance(
   crossCutResults: FunnelRow[],
-  minTouches: number = 20
+  minTouches: number = MIN_TOUCHES_THRESHOLD
 ): VarianceResult | null {
   const rates = crossCutResults
     .filter((r) => r.touches >= minTouches)
@@ -171,8 +172,8 @@ export function calculateVariance(
   const ratio = parseFloat((max / min).toFixed(1));
 
   let signal: VarianceResult["signal"];
-  if (ratio >= 3) signal = "strong";
-  else if (ratio >= 1.5) signal = "moderate";
+  if (ratio >= VARIANCE_STRONG) signal = "strong";
+  else if (ratio >= VARIANCE_MODERATE) signal = "moderate";
   else signal = "low";
 
   return { ratio, signal };

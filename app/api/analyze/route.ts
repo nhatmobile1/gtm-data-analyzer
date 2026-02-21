@@ -1,9 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { MAX_CONTEXT_LENGTH, MAX_API_MESSAGES } from "@/lib/constants";
 
 const client = new Anthropic();
-
-const MAX_CONTEXT_LENGTH = 200_000;
-const MAX_MESSAGES = 50;
 
 function isValidMessage(m: unknown): m is { role: string; content: string } {
   return (
@@ -29,9 +27,9 @@ export async function POST(req: Request) {
       );
     }
 
-    if (messages.length === 0 || messages.length > MAX_MESSAGES) {
+    if (messages.length === 0 || messages.length > MAX_API_MESSAGES) {
       return new Response(
-        JSON.stringify({ error: `Messages must contain 1-${MAX_MESSAGES} items` }),
+        JSON.stringify({ error: `Messages must contain 1-${MAX_API_MESSAGES} items` }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }

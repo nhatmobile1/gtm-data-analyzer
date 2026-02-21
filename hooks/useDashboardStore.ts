@@ -7,9 +7,10 @@ import type {
   DashboardStore,
 } from "@/lib/types";
 
+import { MAX_DASHBOARDS } from "@/lib/constants";
+
 const STORAGE_KEY = "gtm-dashboard-store";
 const OLD_STORAGE_KEY = "gtm-recent-files";
-const MAX_DASHBOARDS = 10;
 const MIGRATION_LOCK_KEY = "gtm-migration-lock";
 
 // ── V1 type for migration ──
