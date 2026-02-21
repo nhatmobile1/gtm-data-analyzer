@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EvenUp Q1 Marketing Performance Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface-hover: #1c2230;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --orange: #d29922;
+    --purple: #bc8cff;
+    --pink: #f778ba;
+    --cyan: #39d2c0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 32px;
+  }
+
+  .header {
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+
+  .header p {
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+
+  .kpi-card .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .kpi-card .value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 26px;
+    font-weight: 700;
+  }
+
+  .kpi-card .sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .section {
+    margin-bottom: 48px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .section-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .section-header .badge {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-insight { background: rgba(88,166,255,0.15); color: var(--accent); }
+  .badge-action { background: rgba(63,185,80,0.15); color: var(--green); }
+  .badge-warning { background: rgba(248,81,73,0.15); color: var(--red); }
+  .badge-nurture { background: rgba(188,140,255,0.15); color: var(--purple); }
+
+  .section-note {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-bottom: 16px;
+    max-width: 800px;
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead th {
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    padding: 10px 14px;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  thead th.num { text-align: right; }
+
+  tbody td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+  }
+
+  tbody td.label-cell {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  tbody td.num { text-align: right; }
+
+  tbody tr:hover { background: var(--surface-hover); }
+
+  .bar-cell {
+    position: relative;
+    min-width: 120px;
+  }
+
+  .bar-bg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 6px;
+    border-radius: 3px;
+    opacity: 0.3;
+  }
+
+  .bar-fill {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 6px;
+    border-radius: 3px;
+  }
+
+  .highlight-good { color: var(--green); }
+  .highlight-bad { color: var(--red); }
+  .highlight-warn { color: var(--orange); }
+  .highlight-accent { color: var(--accent); }
+  .highlight-purple { color: var(--purple); }
+
+  .table-wrapper {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow-x: auto;
+    margin-bottom: 16px;
+  }
+
+  .callout {
+    background: rgba(88,166,255,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin-top: 12px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+
+  .callout strong { color: var(--text); }
+
+  .callout.warning {
+    background: rgba(248,81,73,0.06);
+    border-left-color: var(--red);
+  }
+
+  .callout.success {
+    background: rgba(63,185,80,0.06);
+    border-left-color: var(--green);
+  }
+
+  .callout.nurture {
+    background: rgba(188,140,255,0.06);
+    border-left-color: var(--purple);
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .field-verdict {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .verdict-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .verdict-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .verdict-card h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .verdict-card p {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .row-highlight {
+    background: rgba(88,166,255,0.06) !important;
+  }
+
+  .row-warning {
+    background: rgba(248,81,73,0.04) !important;
+  }
+
+  .dim { opacity: 0.5; }
+
+  @media (max-width: 1000px) {
+    .kpi-row { grid-template-columns: repeat(3, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+    .field-verdict { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>EvenUp Q1 2026 · Marketing Performance Analysis</h1>
+  <p>2,538 campaign member records · 42 campaigns · 10 channels · Jan–Mar 2026</p>
+</div>
+
+<!-- KPI ROW -->
+<div class="kpi-row">
+  <div class="kpi-card">
+    <div class="label">Total Touches</div>
+    <div class="value">2,538</div>
+    <div class="sub">across 42 campaigns</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">Meetings Booked</div>
+    <div class="value">335</div>
+    <div class="sub">13.2% conversion rate</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">Opportunities</div>
+    <div class="value">240</div>
+    <div class="sub">71.6% meeting→opp rate</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">Pipeline Generated</div>
+    <div class="value" style="color:var(--accent)">$27.6M</div>
+    <div class="sub">$10,870 per touch</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">Closed Won CARR</div>
+    <div class="value" style="color:var(--green)">$5.0M</div>
+    <div class="sub">41 deals · 18.3% pipeline→win</div>
+  </div>
+</div>
+
+<!-- TABLE 1: CHANNEL FULL FUNNEL -->
+<div class="section">
+  <div class="section-header">
+    <h2>1 · Channel Full-Funnel Performance</h2>
+    <span class="badge badge-insight">Core Insight</span>
+  </div>
+  <p class="section-note">Every channel from first touch through closed revenue. Sorted by pipeline contribution to reveal where marketing dollars actually convert.</p>
+  
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Channel</th>
+          <th class="num">Touches</th>
+          <th class="num">% of Total</th>
+          <th class="num">Meetings</th>
+          <th class="num">Mtg Rate</th>
+          <th class="num">Opps</th>
+          <th class="num">Mtg→Opp</th>
+          <th class="num">Pipeline</th>
+          <th class="num">% Pipeline</th>
+          <th class="num">$/Touch</th>
+          <th class="num">Closed Won</th>
+          <th class="num">Win Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-highlight">
+          <td class="label-cell">Hosted Events</td>
+          <td class="num">543</td>
+          <td class="num">21.4%</td>
+          <td class="num highlight-good">158</td>
+          <td class="num highlight-good">29.1%</td>
+          <td class="num">120</td>
+          <td class="num highlight-good">75.9%</td>
+          <td class="num highlight-accent">$18.8M</td>
+          <td class="num highlight-accent">68.1%</td>
+          <td class="num highlight-good">$34,599</td>
+          <td class="num highlight-good">$3.72M</td>
+          <td class="num">20.0%</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Industry Events</td>
+          <td class="num">300</td>
+          <td class="num">11.8%</td>
+          <td class="num">52</td>
+          <td class="num">17.3%</td>
+          <td class="num">41</td>
+          <td class="num">78.8%</td>
+          <td class="num">$3.35M</td>
+          <td class="num">12.1%</td>
+          <td class="num">$11,158</td>
+          <td class="num">$613K</td>
+          <td class="num">14.6%</td>
+        </tr>
+        <tr class="row-warning">
+          <td class="label-cell">Direct Mail</td>
+          <td class="num">910</td>
+          <td class="num highlight-warn">35.9%</td>
+          <td class="num">70</td>
+          <td class="num highlight-bad">7.7%</td>
+          <td class="num">36</td>
+          <td class="num">51.4%</td>
+          <td class="num">$2.99M</td>
+          <td class="num">10.9%</td>
+          <td class="num highlight-bad">$3,290</td>
+          <td class="num">$328K</td>
+          <td class="num">13.9%</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Paid Search</td>
+          <td class="num">180</td>
+          <td class="num">7.1%</td>
+          <td class="num">23</td>
+          <td class="num">12.8%</td>
+          <td class="num">20</td>
+          <td class="num highlight-good">87.0%</td>
+          <td class="num">$912K</td>
+          <td class="num">3.3%</td>
+          <td class="num">$5,067</td>
+          <td class="num">$68K</td>
+          <td class="num">10.0%</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Email Marketing</td>
+          <td class="num">160</td>
+          <td class="num">6.3%</td>
+          <td class="num">9</td>
+          <td class="num highlight-bad">5.6%</td>
+          <td class="num">8</td>
+          <td class="num highlight-good">88.9%</td>
+          <td class="num">$816K</td>
+          <td class="num">3.0%</td>
+          <td class="num">$5,103</td>
+          <td class="num">$208K</td>
+          <td class="num highlight-good">25.0%</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Organic Search</td>
+          <td class="num">120</td>
+          <td class="num">4.7%</td>
+          <td class="num">13</td>
+          <td class="num">10.8%</td>
+          <td class="num">9</td>
+          <td class="num">69.2%</td>
+          <td class="num">$548K</td>
+          <td class="num">2.0%</td>
+          <td class="num">$4,565</td>
+          <td class="num">$43K</td>
+          <td class="num">11.1%</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Direct Traffic</td>
+          <td class="num">60</td>
+          <td class="num">2.4%</td>
+          <td class="num">5</td>
+          <td class="num">8.3%</td>
+          <td class="num">3</td>
+          <td class="num">60.0%</td>
+          <td class="num">$113K</td>
+          <td class="num">0.4%</td>
+          <td class="num">$1,883</td>
+          <td class="num">$57K</td>
+          <td class="num">33.3%</td>
+        </tr>
+        <tr class="row-warning">
+          <td class="label-cell">Webinar</td>
+          <td class="num">200</td>
+          <td class="num">7.9%</td>
+          <td class="num highlight-bad">3</td>
+          <td class="num highlight-bad">1.5%</td>
+          <td class="num">2</td>
+          <td class="num">66.7%</td>
+          <td class="num highlight-bad">$42K</td>
+          <td class="num">0.2%</td>
+          <td class="num highlight-bad">$212</td>
+          <td class="num highlight-bad">$0</td>
+          <td class="num dim">0%</td>
+        </tr>
+        <tr>
+          <td class="label-cell dim">Paid Social</td>
+          <td class="num dim">40</td>
+          <td class="num dim">1.6%</td>
+          <td class="num dim">1</td>
+          <td class="num dim">2.5%</td>
+          <td class="num dim">0</td>
+          <td class="num dim">—</td>
+          <td class="num dim">$0</td>
+          <td class="num dim">0%</td>
+          <td class="num dim">$0</td>
+          <td class="num dim">$0</td>
+          <td class="num dim">—</td>
+        </tr>
+        <tr>
+          <td class="label-cell dim">Organic Social</td>
+          <td class="num dim">25</td>
+          <td class="num dim">1.0%</td>
+          <td class="num dim">1</td>
+          <td class="num dim">4.0%</td>
+          <td class="num dim">1</td>
+          <td class="num dim">100%</td>
+          <td class="num dim">$19K</td>
+          <td class="num dim">0.1%</td>
+          <td class="num dim">$768</td>
+          <td class="num dim">$0</td>
+          <td class="num dim">0%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout warning">
+    <strong>Concentration risk:</strong> Hosted Events = 21% of touches but 68% of pipeline and 74% of closed won. Meanwhile, Direct Mail = 36% of touches but only 11% of pipeline. Webinars generated $212/touch vs Hosted Events at $34,599/touch — a 163x gap.
+  </div>
+</div>
+
+<!-- TABLE 2: PIPELINE EFFICIENCY -->
+<div class="section">
+  <div class="section-header">
+    <h2>2 · Channel Efficiency Rankings</h2>
+    <span class="badge badge-insight">Efficiency</span>
+  </div>
+  <p class="section-note">Same data, re-ranked by pipeline-per-meeting to reveal which channels produce the most value once a conversation starts.</p>
+  
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Channel</th>
+          <th class="num">Meetings</th>
+          <th class="num">Pipeline</th>
+          <th class="num">$/Meeting</th>
+          <th class="num">Mtg→Opp %</th>
+          <th class="num">Avg Deal (Won)</th>
+          <th class="num">Closed Won</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-highlight">
+          <td class="label-cell">Hosted Events</td>
+          <td class="num">158</td>
+          <td class="num">$18.8M</td>
+          <td class="num highlight-good">$118,907</td>
+          <td class="num">75.9%</td>
+          <td class="num">$155,125</td>
+          <td class="num highlight-good">$3.72M</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Email Marketing</td>
+          <td class="num">9</td>
+          <td class="num">$816K</td>
+          <td class="num highlight-good">$90,711</td>
+          <td class="num highlight-good">88.9%</td>
+          <td class="num">$104,000</td>
+          <td class="num">$208K</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Industry Events</td>
+          <td class="num">52</td>
+          <td class="num">$3.35M</td>
+          <td class="num">$64,371</td>
+          <td class="num">78.8%</td>
+          <td class="num">$102,167</td>
+          <td class="num">$613K</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Direct Mail</td>
+          <td class="num">70</td>
+          <td class="num">$2.99M</td>
+          <td class="num">$42,771</td>
+          <td class="num highlight-bad">51.4%</td>
+          <td class="num highlight-bad">$65,600</td>
+          <td class="num">$328K</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Organic Search</td>
+          <td class="num">13</td>
+          <td class="num">$548K</td>
+          <td class="num">$42,138</td>
+          <td class="num">69.2%</td>
+          <td class="num">$42,600</td>
+          <td class="num">$43K</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Paid Search</td>
+          <td class="num">23</td>
+          <td class="num">$912K</td>
+          <td class="num">$39,657</td>
+          <td class="num highlight-good">87.0%</td>
+          <td class="num">$34,200</td>
+          <td class="num">$68K</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Direct Traffic</td>
+          <td class="num">5</td>
+          <td class="num">$113K</td>
+          <td class="num">$22,600</td>
+          <td class="num">60.0%</td>
+          <td class="num">$56,900</td>
+          <td class="num">$57K</td>
+        </tr>
+        <tr class="row-warning">
+          <td class="label-cell">Webinar</td>
+          <td class="num highlight-bad">3</td>
+          <td class="num">$42K</td>
+          <td class="num highlight-bad">$14,133</td>
+          <td class="num">66.7%</td>
+          <td class="num dim">—</td>
+          <td class="num highlight-bad">$0</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TABLE 3: INTERACTION STATUS -->
+<div class="section">
+  <div class="section-header">
+    <h2>3 · Engagement Depth → Pipeline Correlation</h2>
+    <span class="badge badge-nurture">Nurture Signal</span>
+  </div>
+  <p class="section-note">Interaction Status is a <strong>strong pipeline predictor</strong>. "Attended" produces 10x the pipeline-per-touch vs "Gift Delivered" — this tells you engagement quality matters far more than touch volume.</p>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Interaction Status</th>
+          <th class="num">Touches</th>
+          <th class="num">Meetings</th>
+          <th class="num">Mtg Rate</th>
+          <th class="num">Pipeline</th>
+          <th class="num">$/Touch</th>
+          <th class="num">Closed Won</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-highlight">
+          <td class="label-cell">Attended</td>
+          <td class="num">538</td>
+          <td class="num highlight-good">146</td>
+          <td class="num highlight-good">27.1%</td>
+          <td class="num highlight-accent">$16.5M</td>
+          <td class="num highlight-good">$30,593</td>
+          <td class="num highlight-good">$3.67M</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Visited Booth</td>
+          <td class="num">98</td>
+          <td class="num">18</td>
+          <td class="num">18.4%</td>
+          <td class="num">$1.10M</td>
+          <td class="num">$11,249</td>
+          <td class="num">$147K</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Badge Scan</td>
+          <td class="num">64</td>
+          <td class="num">10</td>
+          <td class="num">15.6%</td>
+          <td class="num">$828K</td>
+          <td class="num">$12,939</td>
+          <td class="num">$307K</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Registered</td>
+          <td class="num">197</td>
+          <td class="num">35</td>
+          <td class="num">17.8%</td>
+          <td class="num">$3.51M</td>
+          <td class="num">$17,812</td>
+          <td class="num">$212K</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Opened</td>
+          <td class="num">84</td>
+          <td class="num">7</td>
+          <td class="num">8.3%</td>
+          <td class="num">$681K</td>
+          <td class="num">$8,101</td>
+          <td class="num">$208K</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Gift Delivered</td>
+          <td class="num highlight-warn">758</td>
+          <td class="num">57</td>
+          <td class="num highlight-bad">7.5%</td>
+          <td class="num">$2.52M</td>
+          <td class="num highlight-bad">$3,321</td>
+          <td class="num">$213K</td>
+        </tr>
+        <tr>
+          <td class="label-cell">– (no status)</td>
+          <td class="num">608</td>
+          <td class="num">57</td>
+          <td class="num">9.4%</td>
+          <td class="num">$2.14M</td>
+          <td class="num">$3,518</td>
+          <td class="num">$283K</td>
+        </tr>
+        <tr class="row-warning">
+          <td class="label-cell">No Show</td>
+          <td class="num">146</td>
+          <td class="num highlight-bad">4</td>
+          <td class="num highlight-bad">2.7%</td>
+          <td class="num">$279K</td>
+          <td class="num highlight-bad">$1,909</td>
+          <td class="num highlight-bad">$0</td>
+        </tr>
+        <tr class="row-warning">
+          <td class="label-cell">Clicked</td>
+          <td class="num">45</td>
+          <td class="num highlight-bad">1</td>
+          <td class="num highlight-bad">2.2%</td>
+          <td class="num">$66K</td>
+          <td class="num highlight-bad">$1,456</td>
+          <td class="num highlight-bad">$0</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout nurture">
+    <strong>Key finding:</strong> Interaction Status is NOT extraneous — it's the strongest engagement quality signal in the dataset. "Attended" contacts convert at 27% vs 7.5% for "Gift Delivered." This should drive your nurture prioritization.
+  </div>
+</div>
+
+<!-- TABLE 4: ACCOUNT TIER -->
+<div class="section">
+  <div class="section-header">
+    <h2>4 · Account Tier Performance</h2>
+    <span class="badge badge-insight">Segmentation</span>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Account Tier</th>
+          <th class="num">Touches</th>
+          <th class="num">% of Total</th>
+          <th class="num">Meetings</th>
+          <th class="num">Mtg Rate</th>
+          <th class="num">Pipeline</th>
+          <th class="num">% Pipeline</th>
+          <th class="num">$/Touch</th>
+          <th class="num">Closed Won</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-highlight">
+          <td class="label-cell">Tier 1</td>
+          <td class="num">725</td>
+          <td class="num">28.6%</td>
+          <td class="num">127</td>
+          <td class="num highlight-good">17.5%</td>
+          <td class="num highlight-accent">$14.3M</td>
+          <td class="num highlight-accent">51.7%</td>
+          <td class="num highlight-good">$19,664</td>
+          <td class="num highlight-good">$2.97M</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Enterprise</td>
+          <td class="num">644</td>
+          <td class="num">25.4%</td>
+          <td class="num">84</td>
+          <td class="num">13.0%</td>
+          <td class="num">$9.45M</td>
+          <td class="num">34.3%</td>
+          <td class="num">$14,674</td>
+          <td class="num">$1.33M</td>
+        </tr>
+        <tr class="row-warning">
+          <td class="label-cell">Tier 2</td>
+          <td class="num highlight-warn">1,169</td>
+          <td class="num highlight-warn">46.1%</td>
+          <td class="num">124</td>
+          <td class="num highlight-bad">10.6%</td>
+          <td class="num">$3.87M</td>
+          <td class="num">14.0%</td>
+          <td class="num highlight-bad">$3,313</td>
+          <td class="num">$746K</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout warning">
+    <strong>Misallocation:</strong> 46% of all marketing touches go to Tier 2 accounts, but they produce only 14% of pipeline and 15% of closed won. Tier 1 accounts produce 6x the pipeline per touch ($19.7K vs $3.3K). Rebalancing touch allocation toward Tier 1 and Enterprise is a clear efficiency lever.
+  </div>
+</div>
+
+<!-- THE NURTURE OPPORTUNITY -->
+<div class="section">
+  <div class="section-header">
+    <h2>5 · The Nurture Opportunity: 2,203 Untouched Leads</h2>
+    <span class="badge badge-nurture">Nurture</span>
+  </div>
+  <p class="section-note">86.8% of all touches didn't result in a meeting. But not all of these are cold — <strong>392 people attended an event but never got a meeting</strong>. That's your warmest untapped pipeline.</p>
+
+  <div class="two-col">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="4" style="color:var(--purple); font-size:12px; text-transform:none; letter-spacing:0;">Warm Leads Dropped (Attended, No Meeting)</th>
+          </tr>
+          <tr>
+            <th>Segment</th>
+            <th class="num">Count</th>
+            <th class="num">% of Attended</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label-cell" colspan="3" style="color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:1px;">By Channel</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Hosted Events</td>
+            <td class="num highlight-purple">236</td>
+            <td class="num">60.2%</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Industry Events</td>
+            <td class="num">87</td>
+            <td class="num">22.2%</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Webinar</td>
+            <td class="num">69</td>
+            <td class="num">17.6%</td>
+          </tr>
+          <tr>
+            <td class="label-cell" colspan="3" style="color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:1px; padding-top:16px;">By Account Type</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Prospect</td>
+            <td class="num highlight-purple">218</td>
+            <td class="num">55.6%</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Customer (Expansion)</td>
+            <td class="num">140</td>
+            <td class="num">35.7%</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Churned (Win-back)</td>
+            <td class="num">34</td>
+            <td class="num">8.7%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="4" style="color:var(--orange); font-size:12px; text-transform:none; letter-spacing:0;">Gift Delivered, No Meeting (701 records)</th>
+          </tr>
+          <tr>
+            <th>Segment</th>
+            <th class="num">Count</th>
+            <th class="num">% of Gifts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label-cell" colspan="3" style="color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:1px;">By Tier</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Tier 2</td>
+            <td class="num highlight-warn">366</td>
+            <td class="num">52.2%</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Enterprise</td>
+            <td class="num">169</td>
+            <td class="num">24.1%</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Tier 1</td>
+            <td class="num">166</td>
+            <td class="num">23.7%</td>
+          </tr>
+          <tr>
+            <td class="label-cell" colspan="3" style="color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:1px; padding-top:16px;">By Account Type</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Prospect</td>
+            <td class="num highlight-warn">492</td>
+            <td class="num">70.2%</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Customer</td>
+            <td class="num">150</td>
+            <td class="num">21.4%</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Churned</td>
+            <td class="num">59</td>
+            <td class="num">8.4%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="callout nurture" style="margin-top:16px">
+    <strong>Your best nurture targets:</strong> 218 Prospects who attended events but didn't book meetings + 166 Tier 1 accounts who received gifts but never met with an AE. If you could convert even 10% of the 392 "attended-no-meeting" leads, that's ~39 additional meetings — worth an estimated $4.6M in pipeline based on the Hosted Events $/meeting rate.
+  </div>
+</div>
+
+<!-- FIELD RELEVANCE ASSESSMENT -->
+<div class="section">
+  <div class="section-header">
+    <h2>6 · Field Relevance Assessment: What Matters vs. Noise</h2>
+    <span class="badge badge-action">Your Question</span>
+  </div>
+  <p class="section-note">You asked which fields are important vs. distractions. Here's the verdict based on variance analysis — does the field reveal meaningful performance differences?</p>
+
+  <div class="field-verdict">
+    <div class="verdict-card">
+      <div class="verdict-icon">✅</div>
+      <div>
+        <h4 style="color:var(--green)">Interaction Status — HIGH VALUE</h4>
+        <p>"Attended" = 27% mtg rate, $30.6K/touch. "Gift Delivered" = 7.5% mtg rate, $3.3K/touch. This is a <strong>10x pipeline efficiency gap</strong>. Use this for nurture scoring and prioritization.</p>
+      </div>
+    </div>
+    <div class="verdict-card">
+      <div class="verdict-icon">✅</div>
+      <div>
+        <h4 style="color:var(--green)">Account Tier — HIGH VALUE</h4>
+        <p>Tier 1 = $19.7K/touch. Tier 2 = $3.3K/touch. A 6x gap that should drive resource allocation and targeting decisions. 46% of touches go to Tier 2 but only 14% of pipeline comes back.</p>
+      </div>
+    </div>
+    <div class="verdict-card">
+      <div class="verdict-icon">✅</div>
+      <div>
+        <h4 style="color:var(--green)">Account Type — HIGH VALUE</h4>
+        <p>Prospects drive 69% of pipeline. But Churned accounts show surprising 12.8% mtg rate and $3M pipeline — a potential win-back motion. Customer expansion ($5.5M pipeline) also signals upsell opportunity.</p>
+      </div>
+    </div>
+    <div class="verdict-card">
+      <div class="verdict-icon">⚠️</div>
+      <div>
+        <h4 style="color:var(--orange)">AE Owner — MODERATE VALUE</h4>
+        <p>James O'Brien = $15.2K/touch, Marcus Webb = $4.5K/touch — a 3.3x gap. Worth monitoring but could reflect territory assignment rather than performance. Investigate before acting on.</p>
+      </div>
+    </div>
+    <div class="verdict-card">
+      <div class="verdict-icon">🔇</div>
+      <div>
+        <h4 style="color:var(--text-muted)">Region — LOW VALUE (Noise)</h4>
+        <p>Meeting rates range from 11.5%–14.9% across regions. Pipeline/touch ranges from $8K–$13K. Variance is flat and not statistically actionable. Mostly noise in this dataset.</p>
+      </div>
+    </div>
+    <div class="verdict-card">
+      <div class="verdict-icon">🔇</div>
+      <div>
+        <h4 style="color:var(--text-muted)">Campaign Response Date — LOW VALUE (for insights)</h4>
+        <p>Monthly trends (Jan→Feb→Mar) just reflect campaign launch timing, not true seasonality. Only 1 quarter of data — not enough to detect patterns. Useful for operational tracking only.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DIRECT MAIL BREAKDOWN -->
+<div class="section">
+  <div class="section-header">
+    <h2>7 · Direct Mail Deep Dive: Few vs. Many</h2>
+    <span class="badge badge-warning">Problem Area</span>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>DM Type</th>
+          <th class="num">Touches</th>
+          <th class="num">Meetings</th>
+          <th class="num">Mtg Rate</th>
+          <th class="num">Pipeline</th>
+          <th class="num">$/Touch</th>
+          <th class="num">Closed Won</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="label-cell">Few (High-Value Gifts)</td>
+          <td class="num">94</td>
+          <td class="num">16</td>
+          <td class="num highlight-good">17.0%</td>
+          <td class="num">$1.51M</td>
+          <td class="num highlight-good">$16,109</td>
+          <td class="num highlight-bad">$0</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Many (Low-Value Gifts)</td>
+          <td class="num">816</td>
+          <td class="num">54</td>
+          <td class="num highlight-bad">6.6%</td>
+          <td class="num">$1.48M</td>
+          <td class="num">$1,813</td>
+          <td class="num">$328K</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout warning">
+    <strong>Paradox:</strong> "Few" gifts drive 2.6x higher meeting rates and 9x higher $/touch — but have <strong>$0 closed won</strong>. This means meetings are being generated but deals aren't closing. Possible causes: wrong target accounts, lack of AE follow-through post-gift, or pipeline too early to close in Q1. Meanwhile, 89% of DM volume goes to "Many" at a 6.6% meeting rate — most of this budget is producing low-quality touches.
+  </div>
+</div>
+
+<!-- CHURNED -->
+<div class="section">
+  <div class="section-header">
+    <h2>8 · Hidden Opportunity: Churned Account Win-Backs</h2>
+    <span class="badge badge-action">Opportunity</span>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Account Type</th>
+          <th class="num">Touches</th>
+          <th class="num">Meetings</th>
+          <th class="num">Mtg Rate</th>
+          <th class="num">Pipeline</th>
+          <th class="num">$/Touch</th>
+          <th class="num">Closed Won</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="label-cell">Prospect</td>
+          <td class="num">1,704</td>
+          <td class="num">250</td>
+          <td class="num">14.7%</td>
+          <td class="num">$19.1M</td>
+          <td class="num">$11,212</td>
+          <td class="num">$3.68M</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Customer (Expansion)</td>
+          <td class="num">607</td>
+          <td class="num">56</td>
+          <td class="num">9.2%</td>
+          <td class="num">$5.49M</td>
+          <td class="num">$9,044</td>
+          <td class="num">$919K</td>
+        </tr>
+        <tr class="row-highlight">
+          <td class="label-cell">Churned (Win-back)</td>
+          <td class="num">227</td>
+          <td class="num">29</td>
+          <td class="num highlight-good">12.8%</td>
+          <td class="num highlight-accent">$2.99M</td>
+          <td class="num highlight-good">$13,154</td>
+          <td class="num">$437K</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout success">
+    <strong>Surprise finding:</strong> Churned accounts have the highest $/touch at $13.2K and a 12.8% meeting rate — outperforming Customers on both metrics. $437K already closed-won from win-backs. This suggests a formal win-back motion could be a high-ROI play, especially through Hosted Events where churned accounts show a 31% meeting rate.
+  </div>
+</div>
+
+</body>
+</html>

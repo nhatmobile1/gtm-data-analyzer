@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EvenUp Take-Home: Tasks 2 & 3</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface-2: #1c2230;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --orange: #d29922;
+    --purple: #bc8cff;
+    --pink: #f778ba;
+    --cyan: #39d2c0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; padding: 40px; max-width: 1100px; margin: 0 auto; }
+
+  /* SECTION DIVIDER */
+  .task-header {
+    margin: 60px 0 32px 0;
+    padding: 28px 32px;
+    background: linear-gradient(135deg, rgba(88,166,255,0.08), rgba(188,140,255,0.06));
+    border: 1px solid rgba(88,166,255,0.2);
+    border-radius: 12px;
+  }
+  .task-header:first-child { margin-top: 0; }
+  .task-header .task-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .task-header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 8px; }
+  .task-header p { color: var(--text-muted); font-size: 14px; }
+
+  /* CONTENT BLOCKS */
+  h2 {
+    font-size: 18px; font-weight: 700; margin: 36px 0 12px 0;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  h3 { font-size: 15px; font-weight: 600; margin: 24px 0 8px 0; color: var(--accent); }
+  p, li { font-size: 14px; color: var(--text); margin-bottom: 8px; }
+  ul { padding-left: 20px; margin-bottom: 16px; }
+  li { margin-bottom: 6px; }
+
+  /* CARDS */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin: 16px 0; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .card h4 { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .card p { font-size: 13px; color: var(--text-muted); margin-bottom: 0; }
+  .card .metric {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px; font-weight: 700; margin: 4px 0 8px 0;
+  }
+
+  /* TABLES */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    text-align: left; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--text-muted);
+    padding: 12px 14px; border-bottom: 2px solid var(--border); font-weight: 600; white-space: nowrap;
+  }
+  thead th.num { text-align: right; }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
+  tbody td.num { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; }
+  tbody td.label-cell { font-weight: 500; }
+  tbody tr:hover { background: var(--surface-2); }
+
+  /* CALLOUTS */
+  .callout {
+    padding: 16px 20px; border-radius: 0 8px 8px 0;
+    margin: 16px 0; font-size: 13px; line-height: 1.7; color: var(--text-muted);
+    border-left: 3px solid var(--accent);
+    background: rgba(88,166,255,0.06);
+  }
+  .callout strong { color: var(--text); }
+  .callout.green { border-left-color: var(--green); background: rgba(63,185,80,0.06); }
+  .callout.red { border-left-color: var(--red); background: rgba(248,81,73,0.06); }
+  .callout.purple { border-left-color: var(--purple); background: rgba(188,140,255,0.06); }
+  .callout.orange { border-left-color: var(--orange); background: rgba(210,153,34,0.06); }
+
+  /* FLOW DIAGRAM */
+  .flow {
+    display: flex; align-items: center; gap: 0;
+    margin: 20px 0; flex-wrap: wrap;
+  }
+  .flow-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    text-align: center;
+    min-width: 130px;
+  }
+  .flow-step .step-label {
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--text-muted); margin-bottom: 4px;
+  }
+  .flow-step .step-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; font-weight: 600;
+  }
+  .flow-arrow {
+    font-size: 18px; color: var(--text-muted); padding: 0 8px;
+  }
+
+  /* TIMELINE */
+  .timeline { margin: 20px 0; padding-left: 24px; border-left: 2px solid var(--border); }
+  .timeline-item { margin-bottom: 20px; position: relative; }
+  .timeline-item::before {
+    content: ''; position: absolute; left: -29px; top: 4px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--bg);
+  }
+  .timeline-item .time-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--accent); margin-bottom: 4px;
+  }
+  .timeline-item h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .timeline-item p { font-size: 13px; color: var(--text-muted); margin-bottom: 0; }
+
+  /* BADGE */
+  .badge {
+    display: inline-block; font-size: 11px; padding: 3px 10px;
+    border-radius: 20px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.5px; margin-left: 8px; vertical-align: middle;
+  }
+  .badge-blue { background: rgba(88,166,255,0.15); color: var(--accent); }
+  .badge-green { background: rgba(63,185,80,0.15); color: var(--green); }
+  .badge-red { background: rgba(248,81,73,0.15); color: var(--red); }
+  .badge-purple { background: rgba(188,140,255,0.15); color: var(--purple); }
+
+  .hl-green { color: var(--green); }
+  .hl-red { color: var(--red); }
+  .hl-accent { color: var(--accent); }
+  .hl-orange { color: var(--orange); }
+  .hl-purple { color: var(--purple); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } .flow { flex-direction: column; } }
+
+  .comparison-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    margin: 16px 0; border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .comparison-side { padding: 20px; background: var(--surface); }
+  .comparison-side:first-child { border-right: 1px solid var(--border); }
+  .comparison-side h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .comparison-side.bad h4 { color: var(--red); }
+  .comparison-side.good h4 { color: var(--green); }
+  .comparison-side ul { margin: 0; padding-left: 16px; }
+  .comparison-side li { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- TASK 2: REPORTING FRAMEWORK                  -->
+<!-- ============================================ -->
+<div class="task-header">
+  <div class="task-num">Task 2</div>
+  <h1>Reporting Framework: Channel Efficiency & Pipeline Concentration</h1>
+  <p>Designed to help leadership monitor, rebalance, and optimize the marketing channel mix based on pipeline contribution and efficiency — not just activity volume.</p>
+</div>
+
+<h2>Why This Insight?</h2>
+<p>The Q1 data reveals a critical structural risk: <strong>68% of all pipeline ($18.8M of $27.6M) comes from a single channel — Hosted Events</strong>. Meanwhile, the highest-volume channel (Direct Mail at 36% of touches) generates only 11% of pipeline. This imbalance means a single disruption to the events program (budget cuts, travel restrictions, event cancellations) would wipe out the majority of pipeline generation overnight.</p>
+<p>Leadership needs a framework to continuously monitor this concentration, identify when channels are over- or under-performing relative to investment, and make informed rebalancing decisions before problems hit the pipeline.</p>
+
+<h2>The Dashboard: Channel Efficiency Scorecard</h2>
+
+<h3>Primary Metrics (The "Big 5")</h3>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>Definition</th>
+        <th>Why It Matters</th>
+        <th>Target/Benchmark</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="label-cell">Pipeline Concentration %</td>
+        <td>% of total pipeline from each channel</td>
+        <td>Flags dependency risk; no channel should exceed 50%</td>
+        <td class="num">No channel &gt;50%</td>
+      </tr>
+      <tr>
+        <td class="label-cell">Pipeline per Touch ($/Touch)</td>
+        <td>Pipeline $ ÷ Campaign touches</td>
+        <td>Efficiency signal — reveals which channels generate the most value per unit of effort</td>
+        <td class="num">&gt;$10K = strong</td>
+      </tr>
+      <tr>
+        <td class="label-cell">Meeting Rate</td>
+        <td>Meetings booked ÷ Touches</td>
+        <td>Top-of-funnel conversion — are touches generating conversations?</td>
+        <td class="num">&gt;15% = strong</td>
+      </tr>
+      <tr>
+        <td class="label-cell">Meeting → Opp Conversion</td>
+        <td>Opportunities ÷ Meetings</td>
+        <td>Sales acceptance quality — are meetings productive?</td>
+        <td class="num">&gt;70% = strong</td>
+      </tr>
+      <tr>
+        <td class="label-cell">Channel Win Rate</td>
+        <td>Closed Won deals ÷ Total opps per channel</td>
+        <td>End-to-end quality signal; separates vanity pipeline from real revenue</td>
+        <td class="num">&gt;18% = strong</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>Secondary Metrics (Drill-Down Layer)</h3>
+<div class="card-grid">
+  <div class="card">
+    <h4>Touch Allocation vs Pipeline Share</h4>
+    <p>Compares % of touches each channel receives against % of pipeline it generates. Highlights misalignment. Q1 example: DM gets 36% of touches but returns 11% of pipeline.</p>
+  </div>
+  <div class="card">
+    <h4>Avg Deal Size by Channel</h4>
+    <p>Determines which channels attract larger opportunities. Hosted Events avg $155K vs Direct Mail avg $66K — a 2.4x difference in deal quality.</p>
+  </div>
+  <div class="card">
+    <h4>Pipeline Velocity by Channel</h4>
+    <p>Days from campaign response → qualified opp → closed won. Identifies which channels produce faster-moving deals vs pipeline that stalls.</p>
+  </div>
+  <div class="card">
+    <h4>Tier-Weighted Pipeline</h4>
+    <p>Breaks pipeline by Account Tier within each channel. Are channels bringing in Tier 1/Enterprise or flooding with lower-value Tier 2?</p>
+  </div>
+</div>
+
+<h2>Dashboard Format & Layout</h2>
+<p>I'd build this as a <strong>Sigma Computing dashboard</strong> connected to Snowflake (matching EvenUp's existing stack), with three views:</p>
+
+<div class="card-grid">
+  <div class="card" style="border-left: 3px solid var(--accent);">
+    <h4 style="color: var(--accent);">View 1: Executive Summary</h4>
+    <p><strong>Audience:</strong> VP Rev Marketing, VP Rev Ops, CMO</p>
+    <p>Single page with KPI tiles (total pipeline, pipeline concentration %, top/bottom channel) + a channel funnel waterfall chart showing the full flow from touches → meetings → opps → pipeline → closed won for each channel.</p>
+  </div>
+  <div class="card" style="border-left: 3px solid var(--green);">
+    <h4 style="color: var(--green);">View 2: Channel Deep-Dive</h4>
+    <p><strong>Audience:</strong> Marketing Ops, Demand Gen leads</p>
+    <p>Filterable by channel, tier, and time period. Shows campaign-level performance within each channel, interaction status breakdowns, and AE follow-up metrics. This is where operational problems surface.</p>
+  </div>
+  <div class="card" style="border-left: 3px solid var(--purple);">
+    <h4 style="color: var(--purple);">View 3: Trend & Forecast</h4>
+    <p><strong>Audience:</strong> Finance, RevOps leadership</p>
+    <p>Quarter-over-quarter pipeline concentration trends, channel efficiency trends over time, and a simple forecast of expected pipeline by channel based on planned campaigns and historical conversion rates.</p>
+  </div>
+</div>
+
+<h2>Review Cadence & Stakeholders</h2>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Cadence</th>
+        <th>Meeting</th>
+        <th>Attendees</th>
+        <th>Focus</th>
+        <th>Decisions It Drives</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="label-cell"><strong>Weekly</strong></td>
+        <td>Marketing Ops Standup</td>
+        <td>MOps + Demand Gen</td>
+        <td>Campaign-level metrics, anomaly detection, data quality flags</td>
+        <td>Pause underperforming campaigns, reallocate spend within channels, fix data issues</td>
+      </tr>
+      <tr>
+        <td class="label-cell"><strong>Bi-Weekly</strong></td>
+        <td>Marketing ↔ Sales Sync</td>
+        <td>MOps + Sales Ops + AE Managers</td>
+        <td>Meeting→Opp conversion by channel, AE follow-up SLA compliance, lead quality feedback loop</td>
+        <td>Adjust lead routing, escalate SLA violations, refine qualification criteria</td>
+      </tr>
+      <tr>
+        <td class="label-cell"><strong>Monthly</strong></td>
+        <td>Pipeline Review</td>
+        <td>VP Rev Marketing + VP Rev Ops + Finance</td>
+        <td>Channel concentration %, pipeline coverage ratio, efficiency trends, budget vs actuals</td>
+        <td>Channel budget reallocation, investment/divestment decisions, headcount prioritization</td>
+      </tr>
+      <tr>
+        <td class="label-cell"><strong>Quarterly</strong></td>
+        <td>Strategic Channel Mix Review</td>
+        <td>CMO + VP Rev Ops + VP Rev Marketing + Finance</td>
+        <td>Full-funnel channel efficiency, concentration risk assessment, QoQ trends, competitive positioning</td>
+        <td>Major budget shifts, new channel pilots, program sunset decisions, annual planning inputs</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>What Decisions Does This Framework Drive?</h2>
+<div class="card-grid">
+  <div class="card">
+    <h4>1. Budget Reallocation</h4>
+    <div class="metric hl-accent">$→</div>
+    <p>When $/touch diverges significantly across channels (as it does now — $34.6K for Hosted Events vs $212 for Webinar), shift budget from low-efficiency channels to high-efficiency ones, or invest in improving the underperformers.</p>
+  </div>
+  <div class="card">
+    <h4>2. Concentration De-Risking</h4>
+    <div class="metric hl-orange">⚠️</div>
+    <p>If any channel exceeds 50% of pipeline, trigger a formal review. Goal: grow alternative channels (Industry Events, Paid Search) to bring the top channel below 50% within 2 quarters.</p>
+  </div>
+  <div class="card">
+    <h4>3. Program Sunset / Pilot</h4>
+    <div class="metric hl-red">✕</div>
+    <p>Channels producing &lt;$1K/touch for 2+ consecutive quarters get flagged for sunsetting or fundamental restructuring. New channel experiments get 2 quarters to prove &gt;$5K/touch before scaling.</p>
+  </div>
+  <div class="card">
+    <h4>4. Sales-Marketing Alignment</h4>
+    <div class="metric hl-green">✓</div>
+    <p>Meeting→Opp conversion rates surface whether sales is accepting and working marketing-sourced leads. A drop in this metric triggers investigation into lead quality or follow-up gaps.</p>
+  </div>
+</div>
+
+<div class="callout green">
+  <strong>Why this framework works for EvenUp specifically:</strong> As a legal tech company with a high-ACV, events-heavy GTM motion, pipeline concentration risk is the #1 strategic concern. This framework doesn't just report what happened — it creates early warning systems and clear decision triggers that prevent the team from discovering problems 2 quarters too late.
+</div>
+
+<!-- ============================================ -->
+<!-- TASK 3: OPERATIONAL RECOMMENDATION           -->
+<!-- ============================================ -->
+<div class="task-header">
+  <div class="task-num">Task 3</div>
+  <h1>Operational Recommendation: Post-Event Engagement Capture System</h1>
+  <p>A structured process to convert the 392 event attendees who didn't book meetings into pipeline — addressing the single largest untapped revenue opportunity in the Q1 data.</p>
+</div>
+
+<h2>What's Broken</h2>
+
+<div class="flow">
+  <div class="flow-step">
+    <div class="step-label">Attended Events</div>
+    <div class="step-value">538</div>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">
+    <div class="step-label">Booked Meeting</div>
+    <div class="step-value hl-green">146</div>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step" style="border-color: var(--red);">
+    <div class="step-label">No Meeting</div>
+    <div class="step-value hl-red">392</div>
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step" style="border-color: var(--red);">
+    <div class="step-label">No Follow-Up</div>
+    <div class="step-value hl-red">???</div>
+  </div>
+</div>
+
+<p>The data shows "Attended" contacts convert at <strong>27.1% meeting rate</strong> and generate <strong>$30,593 pipeline per touch</strong> — the strongest engagement signal in the entire dataset. Yet <strong>73% of attendees (392 people) left events without a booked meeting and received no structured follow-up</strong>.</p>
+
+<p>This isn't a lead quality problem — these are Prospects (218), existing Customers (140), and even Churned accounts (34) who showed up in person. Industry research supports this: a significant share of trade show leads never receive effective follow-up, with industry surveys reporting that roughly 64% of event leads aren't properly followed up on.</p>
+
+<div class="comparison-row">
+  <div class="comparison-side bad">
+    <h4>❌ Current State</h4>
+    <ul>
+      <li>No standardized post-event follow-up process</li>
+      <li>AEs own follow-up but no SLA or accountability</li>
+      <li>No segmentation by engagement level (Attended vs Badge Scan vs No Show)</li>
+      <li>No automated nurture for attendees who don't book immediately</li>
+      <li>Gifting program (701 gifts delivered) operates without follow-up triggers</li>
+      <li>No recycling — leads that don't convert are abandoned</li>
+    </ul>
+  </div>
+  <div class="comparison-side good">
+    <h4>✅ Proposed State</h4>
+    <ul>
+      <li>Tiered follow-up SLA based on engagement depth + account tier</li>
+      <li>Auto-created SFDC tasks with due dates and escalation paths</li>
+      <li>Engagement-based segmentation drives routing priority</li>
+      <li>Automated Marketo nurture for attendees not booked within 72 hours</li>
+      <li>Gift delivery triggers mandatory AE outreach task within 48 hours</li>
+      <li>14-day recycle rule: unworked leads return to marketing nurture with reason code</li>
+    </ul>
+  </div>
+</div>
+
+<h2>The Solution: Tiered Post-Event Engagement SLA</h2>
+
+<h3>Step 1: Segment Attendees by Priority</h3>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Priority Tier</th>
+        <th>Criteria</th>
+        <th>AE SLA</th>
+        <th>Automation Trigger</th>
+        <th>Q1 Volume</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="label-cell" style="color:var(--red);">🔴 Hot</td>
+        <td>Attended + (Tier 1 or Enterprise) + Prospect</td>
+        <td class="num"><strong>Same day</strong></td>
+        <td>SFDC task created immediately at event check-in; Slack alert to AE</td>
+        <td class="num">~95</td>
+      </tr>
+      <tr>
+        <td class="label-cell" style="color:var(--orange);">🟡 Warm</td>
+        <td>Attended + Tier 2 Prospect, OR any Customer/Churned attendee</td>
+        <td class="num"><strong>Within 48 hours</strong></td>
+        <td>SFDC task created day after event; batch Slack notification</td>
+        <td class="num">~200</td>
+      </tr>
+      <tr>
+        <td class="label-cell" style="color:var(--text-muted);">⚪ Nurture</td>
+        <td>Registered but didn't attend; Badge Scan only; Visited Booth only</td>
+        <td class="num">No AE task</td>
+        <td>Auto-enrolled in Marketo post-event nurture stream (3-touch email sequence)</td>
+        <td class="num">~300</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout">
+  <strong>Why tiered SLAs?</strong> Research consistently shows that teams that automated their way to sub-15-minute response times exceeded quota by 23%, while those averaging 4-hour responses hit only 12%. But not every event lead warrants the same urgency. Tiering by account value and engagement signal ensures AEs prioritize the highest-potential leads while marketing catches the rest automatically.
+</div>
+
+<h3>Step 2: Build the Automation Layer</h3>
+
+<div class="timeline">
+  <div class="timeline-item">
+    <div class="time-label">T+0 (At Event)</div>
+    <h4>Capture & Enrich</h4>
+    <p>Event check-in (badge scan / host confirmation) triggers Marketo program status update to "Attended." Workato workflow enriches record with account tier, AE owner, and existing opp data from Salesforce.</p>
+  </div>
+  <div class="timeline-item">
+    <div class="time-label">T+0 to T+4 hours</div>
+    <h4>Hot Lead Routing</h4>
+    <p>For 🔴 Hot leads: Workato creates SFDC task assigned to AE Owner with subject "[Event Name] - Follow Up: [Contact Name] - Tier 1 Attendee." Due date = today. Slack DM sent to AE with meeting context notes.</p>
+  </div>
+  <div class="timeline-item">
+    <div class="time-label">T+24 hours</div>
+    <h4>Warm Lead Routing + First Nurture Email</h4>
+    <p>For 🟡 Warm leads: SFDC task created for AE with 48-hour due date. Simultaneously, Marketo sends personalized "Great meeting you at [Event]" email with a CTA to book a follow-up conversation.</p>
+  </div>
+  <div class="timeline-item">
+    <div class="time-label">T+72 hours</div>
+    <h4>Escalation Check</h4>
+    <p>Workato checks if 🔴/🟡 SFDC tasks are completed. If not → escalate to AE manager via Slack. If meeting booked → route to normal pipeline process. If not booked → continue nurture sequence.</p>
+  </div>
+  <div class="timeline-item">
+    <div class="time-label">T+5 to T+14 days</div>
+    <h4>Nurture Sequence</h4>
+    <p>For all unboked attendees: 3-touch Marketo email sequence (event recap content → case study relevant to their account type → direct book-a-meeting CTA). Scoring model adds +15 points for email engagement.</p>
+  </div>
+  <div class="timeline-item">
+    <div class="time-label">T+14 days</div>
+    <h4>Recycle Decision</h4>
+    <p>If no meeting booked after 14 days: auto-move to long-term nurture with disposition reason code. AE must log a reason for not converting (wrong contact, not in buying cycle, disqualified, etc.). These codes feed back to marketing for targeting refinement.</p>
+  </div>
+</div>
+
+<h3>Step 3: Apply the Same Model to Direct Mail</h3>
+<p>The 701 "Gift Delivered, No Meeting" records follow the same pattern. Extend the SLA framework to direct mail:</p>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>DM Segment</th>
+        <th>Current Mtg Rate</th>
+        <th>Follow-Up SLA</th>
+        <th>Expected Improvement</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="label-cell">"Few" gifts (high-value, Tier 1/Enterprise)</td>
+        <td class="num">17.0%</td>
+        <td>AE calls within 48 hours of gift delivery confirmation</td>
+        <td class="num hl-green">→ 25%+ meeting rate</td>
+      </tr>
+      <tr>
+        <td class="label-cell">"Many" gifts (Tier 2, broad)</td>
+        <td class="num">6.6%</td>
+        <td>Automated Marketo email 3 days post-delivery; AE task only if email engaged</td>
+        <td class="num hl-green">→ 10%+ meeting rate</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Implementation Plan</h2>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Phase</th>
+        <th>Timeline</th>
+        <th>Owner</th>
+        <th>Deliverables</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="label-cell"><strong>Phase 1: Design & Align</strong></td>
+        <td class="num">Weeks 1–2</td>
+        <td>MOps + Sales Ops</td>
+        <td>Document tiered SLA definitions; get AE manager buy-in; finalize escalation paths; define disposition reason codes</td>
+      </tr>
+      <tr>
+        <td class="label-cell"><strong>Phase 2: Build Automation</strong></td>
+        <td class="num">Weeks 3–4</td>
+        <td>MOps (Marketo + Workato)</td>
+        <td>Marketo program templates for post-event nurture; Workato recipes for SFDC task creation and Slack alerts; scoring model updates</td>
+      </tr>
+      <tr>
+        <td class="label-cell"><strong>Phase 3: Pilot</strong></td>
+        <td class="num">Weeks 5–6</td>
+        <td>MOps + 2 AEs</td>
+        <td>Run on next 2 Hosted Events only; track SLA compliance, meeting conversion, and AE feedback; iterate on timing and messaging</td>
+      </tr>
+      <tr>
+        <td class="label-cell"><strong>Phase 4: Roll Out</strong></td>
+        <td class="num">Weeks 7–8</td>
+        <td>MOps + Sales Ops</td>
+        <td>Extend to all event types + direct mail; train AE team; launch SLA compliance dashboard; begin monthly reporting</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>How to Measure Success</h2>
+
+<div class="card-grid">
+  <div class="card" style="border-top: 3px solid var(--green);">
+    <h4>Primary KPIs</h4>
+    <div style="margin-top:12px">
+      <p><strong>Attended → Meeting conversion:</strong><br><span class="hl-red">Current: 27.1%</span> → <span class="hl-green">Target: 40% within 2 quarters</span></p>
+      <p style="margin-top:12px"><strong>Gift Delivered → Meeting conversion:</strong><br><span class="hl-red">Current: 7.5%</span> → <span class="hl-green">Target: 15% within 2 quarters</span></p>
+      <p style="margin-top:12px"><strong>Incremental pipeline from recovered leads:</strong><br><span class="hl-green">Target: $4–6M additional pipeline per quarter</span></p>
+    </div>
+  </div>
+  <div class="card" style="border-top: 3px solid var(--accent);">
+    <h4>Operational KPIs</h4>
+    <div style="margin-top:12px">
+      <p><strong>SLA Compliance Rate:</strong><br>% of Hot/Warm leads contacted within SLA window<br><span class="hl-green">Target: &gt;85% compliance</span></p>
+      <p style="margin-top:12px"><strong>Avg Time to First Contact:</strong><br>Hours from event attendance to first AE outreach<br><span class="hl-green">Target: &lt;24 hours for Hot, &lt;48 for Warm</span></p>
+      <p style="margin-top:12px"><strong>Recycle Rate with Reason:</strong><br>% of leads returned to marketing with disposition code<br><span class="hl-green">Target: 100% disposition (no silent abandonment)</span></p>
+    </div>
+  </div>
+</div>
+
+<h2>Why This Recommendation (Not Others)</h2>
+
+<p>I considered three operational changes before landing on this one:</p>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Option</th>
+        <th>Impact Potential</th>
+        <th>Implementation Effort</th>
+        <th>Verdict</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="label-cell">A. Restructure channel budget (shift DM → Events)</td>
+        <td>High pipeline growth</td>
+        <td>High — requires budget approval, vendor changes, 1+ quarter lead time</td>
+        <td><span class="badge badge-purple">Strategic but slow</span></td>
+      </tr>
+      <tr>
+        <td class="label-cell">B. Fix Webinar program (new format, promotion strategy)</td>
+        <td>Moderate — Webinar is only $42K pipeline</td>
+        <td>Medium — needs content strategy, promotion rethink</td>
+        <td><span class="badge badge-red">Low ceiling</span></td>
+      </tr>
+      <tr style="background: rgba(63,185,80,0.06);">
+        <td class="label-cell"><strong>C. Post-Event Engagement Capture SLA</strong></td>
+        <td><strong>High — recovers from your BEST channel</strong></td>
+        <td><strong>Low-Medium — uses existing tools (Marketo, Workato, SFDC)</strong></td>
+        <td><span class="badge badge-green">✓ Best ROI</span></td>
+      </tr>
+      <tr>
+        <td class="label-cell">D. Tier-based targeting realignment (reduce Tier 2 touches)</td>
+        <td>High efficiency gain</td>
+        <td>Medium — requires list strategy changes, potential political friction</td>
+        <td><span class="badge badge-blue">Strong runner-up</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout green">
+  <strong>Option C wins because:</strong> It has the highest ratio of impact to effort. It amplifies your best-performing channel (Hosted Events) rather than trying to fix a broken one. It uses tools already in the stack (Marketo, Workato, Salesforce, Slack). It directly addresses the data finding that 392 warm attendees are being dropped. And it builds a reusable framework that extends to Direct Mail and future channels. The estimated $4–6M pipeline recovery is based on converting just 10–15% of previously-unworked warm leads at existing channel pipeline rates.
+</div>
+
+<div class="callout purple" style="margin-top:24px;">
+  <strong>A note on the runner-up (Option D):</strong> The Tier 2 misallocation finding (46% of touches, 14% of pipeline) is a strong secondary recommendation. If I had two slides, I'd present the tier-based targeting realignment as a "Phase 2" initiative that pairs naturally with this SLA work — once you've captured more value from existing touches, then optimize who you're targeting.
+</div>
+
+</body>
+</html>
