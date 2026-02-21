@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  BarChart,
   Bar,
   XAxis,
   YAxis,
@@ -32,7 +31,7 @@ interface CrossCutExplorerProps {
 const CHART_COLORS = {
   accent: "#58a6ff",
   positive: "#3fb950",
-  textMuted: "#8b949e",
+  textMuted: "#c9d1d9",
   grid: "#21262d",
 };
 
@@ -57,8 +56,8 @@ export default function CrossCutExplorer({
   ];
 
   return (
-    <div>
-      <div className="flex items-center gap-3 mb-4">
+    <div style={{ animation: "fade-in 0.3s ease-out both" }}>
+      <div className="flex flex-wrap items-center gap-3 mb-4">
         <span className="text-muted text-xs">Dimension:</span>
         <select
           value={crossCutDim || ""}
@@ -73,7 +72,7 @@ export default function CrossCutExplorer({
         </select>
         {variance && (
           <span
-            className={`text-[11px] py-[3px] px-[10px] rounded-full font-semibold ${
+            className={`text-[11px] py-[3px] px-2.5 rounded font-semibold ${
               variance.signal === "strong"
                 ? "bg-positive/15 text-positive"
                 : variance.signal === "moderate"
@@ -82,11 +81,11 @@ export default function CrossCutExplorer({
             }`}
           >
             {variance.signal === "strong"
-              ? "\ud83d\udfe2 STRONG SIGNAL"
+              ? "STRONG SIGNAL"
               : variance.signal === "moderate"
-                ? "\ud83d\udfe1 MODERATE"
-                : "\ud83d\udd07 LOW VARIANCE"}{" "}
-            \u2014 {variance.ratio}x gap
+                ? "MODERATE"
+                : "LOW VARIANCE"}{" "}
+            &mdash; {variance.ratio}x gap
           </span>
         )}
       </div>
@@ -98,7 +97,7 @@ export default function CrossCutExplorer({
               {headers.map((h, i) => (
                 <th
                   key={h}
-                  className={`${i === 0 ? "text-left" : "text-right"} py-[10px] px-3 text-[10px] uppercase tracking-wide text-muted border-b-2 border-border whitespace-nowrap font-semibold`}
+                  className={`${i === 0 ? "text-left" : "text-right"} py-2.5 px-3 text-[10px] uppercase tracking-wide text-muted border-b-2 border-border whitespace-nowrap font-semibold`}
                 >
                   {h}
                 </th>
@@ -107,39 +106,39 @@ export default function CrossCutExplorer({
           </thead>
           <tbody>
             {crossCut.map((r) => (
-              <tr key={r.name}>
-                <td className="py-[10px] px-3 font-medium text-[13px]">
+              <tr key={r.name} className="transition-colors hover:bg-surface-hover">
+                <td className="py-2.5 px-3 font-medium text-[13px]">
                   {r.name}
                 </td>
-                <td className="text-right py-[10px] px-3 font-mono text-[13px]">
+                <td className="text-right py-2.5 px-3 font-mono text-[13px]">
                   {formatNumber(r.touches)}
                 </td>
-                <td className="text-right py-[10px] px-3 font-mono text-[13px] text-muted">
+                <td className="text-right py-2.5 px-3 font-mono text-[13px] text-muted">
                   {formatPercent(r.touchShare)}
                 </td>
-                <td className="text-right py-[10px] px-3 font-mono text-[13px]">
+                <td className="text-right py-2.5 px-3 font-mono text-[13px]">
                   {formatNumber(r.meetings)}
                 </td>
                 <td
-                  className={`text-right py-[10px] px-3 font-mono text-[13px] ${meetingRateColor(r.mtgRate)}`}
+                  className={`text-right py-2.5 px-3 font-mono text-[13px] ${meetingRateColor(r.mtgRate)}`}
                 >
                   {formatPercent(r.mtgRate)}
                 </td>
-                <td className="text-right py-[10px] px-3 font-mono text-[13px] text-accent">
+                <td className="text-right py-2.5 px-3 font-mono text-[13px] text-accent">
                   {formatCurrency(r.pipeline)}
                 </td>
-                <td className="text-right py-[10px] px-3 font-mono text-[13px] text-muted">
+                <td className="text-right py-2.5 px-3 font-mono text-[13px] text-muted">
                   {formatPercent(r.pipelineShare)}
                 </td>
                 <td
-                  className={`text-right py-[10px] px-3 font-mono text-[13px] ${pipelinePerTouchColor(r.pipelinePerTouch)}`}
+                  className={`text-right py-2.5 px-3 font-mono text-[13px] ${pipelinePerTouchColor(r.pipelinePerTouch)}`}
                 >
                   {formatCurrency(r.pipelinePerTouch)}
                 </td>
-                <td className="text-right py-[10px] px-3 font-mono text-[13px] text-positive">
+                <td className="text-right py-2.5 px-3 font-mono text-[13px] text-positive">
                   {formatCurrency(r.closedWon)}
                 </td>
-                <td className="text-right py-[10px] px-3 font-mono text-[13px]">
+                <td className="text-right py-2.5 px-3 font-mono text-[13px]">
                   {r.avgDeal > 0 ? formatCurrency(r.avgDeal) : "\u2014"}
                 </td>
               </tr>
@@ -154,15 +153,14 @@ export default function CrossCutExplorer({
           <div className="text-[13px] font-semibold mb-2">
             {crossCutDim}: Efficiency vs Meeting Rate
           </div>
-          <ResponsiveContainer width="100%" height={320}>
-            <ComposedChart data={crossCut} margin={{ bottom: 60 }}>
+          <ResponsiveContainer width="100%" height={300}>
+            <ComposedChart data={crossCut} margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
               <XAxis
                 dataKey="name"
                 tick={{ fill: CHART_COLORS.textMuted, fontSize: 10 }}
-                angle={-35}
-                textAnchor="end"
                 axisLine={{ stroke: CHART_COLORS.grid }}
                 tickLine={false}
+                interval={0}
               />
               <YAxis
                 yAxisId="left"
@@ -203,8 +201,9 @@ export default function CrossCutExplorer({
                 }}
               />
               <Legend
-                verticalAlign="bottom"
-                wrapperStyle={{ fontSize: 11, color: CHART_COLORS.textMuted }}
+                verticalAlign="top"
+                align="right"
+                wrapperStyle={{ fontSize: 11, color: CHART_COLORS.textMuted, paddingBottom: 8 }}
               />
               <Bar
                 yAxisId="left"

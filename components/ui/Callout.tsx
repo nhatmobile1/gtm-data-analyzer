@@ -1,22 +1,55 @@
+import { Info, AlertTriangle, CheckCircle, Sparkles } from "lucide-react";
+
 interface CalloutProps {
   children: React.ReactNode;
   variant?: "info" | "warning" | "positive" | "nurture";
 }
 
-const variantStyles: Record<string, { border: string; bg: string }> = {
-  info: { border: "border-l-accent", bg: "bg-accent/[0.06]" },
-  warning: { border: "border-l-negative", bg: "bg-negative/[0.06]" },
-  positive: { border: "border-l-positive", bg: "bg-positive/[0.06]" },
-  nurture: { border: "border-l-nurture", bg: "bg-nurture/[0.06]" },
+const variantConfig: Record<
+  string,
+  {
+    bg: string;
+    border: string;
+    iconColor: string;
+    icon: typeof Info;
+  }
+> = {
+  info: {
+    bg: "bg-accent/[0.05]",
+    border: "border-accent/20",
+    iconColor: "text-accent",
+    icon: Info,
+  },
+  warning: {
+    bg: "bg-negative/[0.05]",
+    border: "border-negative/20",
+    iconColor: "text-negative",
+    icon: AlertTriangle,
+  },
+  positive: {
+    bg: "bg-positive/[0.05]",
+    border: "border-positive/20",
+    iconColor: "text-positive",
+    icon: CheckCircle,
+  },
+  nurture: {
+    bg: "bg-nurture/[0.05]",
+    border: "border-nurture/20",
+    iconColor: "text-nurture",
+    icon: Sparkles,
+  },
 };
 
 export default function Callout({ children, variant = "info" }: CalloutProps) {
-  const styles = variantStyles[variant];
+  const config = variantConfig[variant];
+  const Icon = config.icon;
+
   return (
     <div
-      className={`mt-3 py-3 px-4 ${styles.bg} border-l-[3px] ${styles.border} rounded-r-[6px] text-xs text-muted leading-relaxed`}
+      className={`mt-3 flex items-start gap-2.5 py-3 px-4 ${config.bg} border ${config.border} rounded-lg text-xs text-muted leading-relaxed`}
     >
-      {children}
+      <Icon size={14} className={`${config.iconColor} shrink-0 mt-0.5`} />
+      <div className="flex-1">{children}</div>
     </div>
   );
 }

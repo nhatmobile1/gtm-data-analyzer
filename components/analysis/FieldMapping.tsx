@@ -20,7 +20,7 @@ export default function FieldMapping({ columns }: FieldMappingProps) {
   ];
 
   return (
-    <div>
+    <div style={{ animation: "fade-in 0.3s ease-out both" }}>
       <div className="text-sm font-semibold mb-4">
         Auto-Detected Field Mapping
       </div>
@@ -28,31 +28,31 @@ export default function FieldMapping({ columns }: FieldMappingProps) {
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              <th className="text-left py-[10px] px-[14px] text-[10px] uppercase tracking-wide text-muted border-b-2 border-border">
+              <th className="text-left py-2.5 px-3.5 text-[10px] uppercase tracking-wide text-muted border-b-2 border-border">
                 Role
               </th>
-              <th className="text-left py-[10px] px-[14px] text-[10px] uppercase tracking-wide text-muted border-b-2 border-border">
+              <th className="text-left py-2.5 px-3.5 text-[10px] uppercase tracking-wide text-muted border-b-2 border-border">
                 Detected Column
               </th>
-              <th className="text-left py-[10px] px-[14px] text-[10px] uppercase tracking-wide text-muted border-b-2 border-border">
+              <th className="text-left py-2.5 px-3.5 text-[10px] uppercase tracking-wide text-muted border-b-2 border-border">
                 Status
               </th>
             </tr>
           </thead>
           <tbody>
             {mappings.map((m) => (
-              <tr key={m.role}>
-                <td className="py-[10px] px-[14px] font-medium text-[13px]">
+              <tr key={m.role} className="transition-colors hover:bg-surface-hover">
+                <td className="py-2.5 px-3.5 font-medium text-[13px]">
                   {m.role}
                 </td>
                 <td
-                  className={`py-[10px] px-[14px] font-mono text-xs ${m.col ? "text-text" : "text-muted"}`}
+                  className={`py-2.5 px-3.5 font-mono text-xs ${m.col ? "text-text" : "text-muted"}`}
                 >
                   {m.col || "Not detected"}
                 </td>
-                <td className="py-[10px] px-[14px]">
+                <td className="py-2.5 px-3.5">
                   <span
-                    className={`text-[11px] py-0.5 px-2 rounded-xl ${
+                    className={`text-[11px] py-0.5 px-2 rounded ${
                       m.col
                         ? "bg-positive/15 text-positive"
                         : "bg-negative/15 text-negative"
@@ -74,7 +74,7 @@ export default function FieldMapping({ columns }: FieldMappingProps) {
         {columns.dimensions.map((d) => (
           <span
             key={d}
-            className="py-1 px-3 bg-surface border border-border rounded-full text-xs"
+            className="py-1 px-3 bg-surface border border-border rounded-md text-xs"
           >
             {d}
           </span>

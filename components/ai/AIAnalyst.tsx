@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { Send, Trash2 } from "lucide-react";
 import type { Message } from "@/lib/types";
 
 interface AIAnalystProps {
   messages: Message[];
   loading: boolean;
+  streamingContent: string;
   onAsk: (question: string) => void;
   onClear: () => void;
 }
@@ -20,6 +22,20 @@ const STARTER_PROMPTS = [
   "What's broken with the Direct Mail program? How would you fix it?",
   "If you were presenting this to a VP of Revenue Operations, what story would you tell?",
 ];
+
+function renderInlineBold(text: string): React.ReactNode {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <strong key={i} className="font-semibold text-text">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return part;
+  });
+}
 
 function renderMarkdownLine(line: string, index: number) {
   if (line.startsWith("## ") || line.startsWith("### ")) {
@@ -39,23 +55,42 @@ function renderMarkdownLine(line: string, index: number) {
       </div>
     );
   }
+  if (/^\d+\.\s/.test(line)) {
+    return (
+      <div key={index} className="pl-4 relative">
+        <span className="absolute left-0 text-muted font-mono text-xs">
+          {line.match(/^\d+/)?.[0]}.
+        </span>
+        {renderInlineBold(line.replace(/^\d+\.\s/, ""))}
+      </div>
+    );
+  }
   if (line.startsWith("- ") || line.startsWith("\u2022 ")) {
     return (
       <div key={index} className="pl-4 relative">
         <span className="absolute left-1 text-muted">&bull;</span>
-        {line.replace(/^[-\u2022]\s/, "")}
+        {renderInlineBold(line.replace(/^[-\u2022]\s/, ""))}
       </div>
     );
   }
   if (line.trim() === "") {
     return <div key={index} className="h-2" />;
   }
-  return <div key={index}>{line}</div>;
+  return <div key={index}>{renderInlineBold(line)}</div>;
+}
+
+function MessageContent({ content }: { content: string }) {
+  return (
+    <div className="text-[13px] leading-[1.7] whitespace-pre-wrap">
+      {content.split("\n").map(renderMarkdownLine)}
+    </div>
+  );
 }
 
 export default function AIAnalyst({
   messages,
   loading,
+  streamingContent,
   onAsk,
   onClear,
 }: AIAnalystProps) {
@@ -64,7 +99,7 @@ export default function AIAnalyst({
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+  }, [messages, loading, streamingContent]);
 
   const handleSubmit = () => {
     if (!input.trim() || loading) return;
@@ -73,19 +108,22 @@ export default function AIAnalyst({
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-260px)]">
+    <div className="flex flex-col h-[calc(100vh-260px)]" style={{ animation: "fade-in 0.3s ease-out both" }}>
       {/* Starter prompts */}
-      {messages.length === 0 && (
-        <div className="mb-4">
+      {messages.length === 0 && !loading && (
+        <div className="mb-4" style={{ animation: "fade-in-up 0.4s ease-out both" }}>
           <div className="text-[15px] font-semibold mb-3">
             Ask anything about your data
           </div>
-          <div className="grid grid-cols-2 gap-2 mb-2">
-            {STARTER_PROMPTS.map((prompt) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+            {STARTER_PROMPTS.map((prompt, i) => (
               <button
                 key={prompt}
                 onClick={() => onAsk(prompt)}
-                className="bg-surface border border-border rounded-lg py-[10px] px-[14px] text-muted text-xs text-left cursor-pointer leading-relaxed transition-all hover:border-accent hover:text-text"
+                className="bg-surface border border-border rounded-lg py-2.5 px-3.5 text-muted text-xs text-left cursor-pointer leading-relaxed transition-all hover:border-accent/50 hover:text-text"
+                style={{
+                  animation: `fade-in-up 0.3s ease-out ${i * 0.04}s both`,
+                }}
               >
                 {prompt}
               </button>
@@ -97,7 +135,11 @@ export default function AIAnalyst({
       {/* Chat messages */}
       <div className="flex-1 overflow-y-auto mb-3 flex flex-col gap-3">
         {messages.map((msg, i) => (
-          <div key={i} className="flex gap-[10px] items-start">
+          <div
+            key={i}
+            className="flex gap-2.5 items-start"
+            style={{ animation: "fade-in-up 0.25s ease-out both" }}
+          >
             <div
               className={`w-7 h-7 rounded-md flex items-center justify-center text-[13px] shrink-0 mt-0.5 ${
                 msg.role === "user"
@@ -110,40 +152,53 @@ export default function AIAnalyst({
             <div
               className={`flex-1 rounded-lg py-3 px-4 border ${
                 msg.role === "user"
-                  ? "bg-[rgba(31,111,235,0.08)] border-[rgba(31,111,235,0.2)]"
+                  ? "bg-accent/[0.06] border-accent/20"
                   : "bg-surface border-border"
               }`}
             >
               {msg.role === "user" ? (
                 <div className="text-[13px] leading-relaxed">{msg.content}</div>
               ) : (
-                <div className="text-[13px] leading-[1.7] whitespace-pre-wrap">
-                  {msg.content.split("\n").map(renderMarkdownLine)}
-                </div>
+                <MessageContent content={msg.content} />
               )}
             </div>
           </div>
         ))}
+
+        {/* Streaming response */}
         {loading && (
-          <div className="flex gap-[10px] items-start">
+          <div
+            className="flex gap-2.5 items-start"
+            style={{ animation: "fade-in 0.2s ease-out both" }}
+          >
             <div className="w-7 h-7 rounded-md bg-surface border border-border flex items-center justify-center text-[13px] shrink-0">
               {"\ud83e\udd16"}
             </div>
-            <div className="bg-surface border border-border rounded-lg py-3 px-4">
-              <div className="flex gap-1 items-center">
-                {[0, 1, 2].map((d) => (
-                  <div
-                    key={d}
-                    className="w-1.5 h-1.5 rounded-full bg-accent"
-                    style={{
-                      animation: `pulse-dot 1.2s ${d * 0.2}s infinite`,
-                    }}
+            <div className="flex-1 bg-surface border border-border rounded-lg py-3 px-4">
+              {streamingContent ? (
+                <div className="relative">
+                  <MessageContent content={streamingContent} />
+                  <span
+                    className="inline-block w-0.5 h-4 bg-accent ml-0.5 align-middle"
+                    style={{ animation: "typewriter-blink 0.8s step-end infinite" }}
                   />
-                ))}
-                <span className="ml-2 text-xs text-muted">
-                  Analyzing your data...
-                </span>
-              </div>
+                </div>
+              ) : (
+                <div className="flex gap-1 items-center">
+                  {[0, 1, 2].map((d) => (
+                    <div
+                      key={d}
+                      className="w-1.5 h-1.5 rounded-full bg-accent"
+                      style={{
+                        animation: `pulse-dot 1.2s ${d * 0.2}s infinite`,
+                      }}
+                    />
+                  ))}
+                  <span className="ml-2 text-xs text-muted">
+                    Analyzing your data...
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -162,26 +217,28 @@ export default function AIAnalyst({
             }
           }}
           placeholder="Ask a question about your marketing data..."
-          className="flex-1 bg-surface border border-border text-text py-[10px] px-[14px] rounded-lg text-[13px] font-sans outline-none focus:border-accent transition-colors"
+          className="flex-1 bg-surface border border-border text-text py-2.5 px-3.5 rounded-lg text-[13px] font-sans outline-none focus:border-accent transition-colors"
           disabled={loading}
         />
         <button
           onClick={handleSubmit}
           disabled={loading || !input.trim()}
-          className={`py-[10px] px-5 rounded-lg text-[13px] font-semibold font-sans transition-colors ${
+          className={`py-2.5 px-4 rounded-lg text-[13px] font-semibold font-sans transition-colors flex items-center gap-1.5 ${
             loading || !input.trim()
               ? "bg-[#21262d] text-muted cursor-not-allowed"
               : "bg-[#1f6feb] text-white cursor-pointer hover:bg-accent"
           }`}
         >
-          {loading ? "..." : "Ask"}
+          <Send size={14} />
+          <span className="hidden sm:inline">{loading ? "..." : "Ask"}</span>
         </button>
         {messages.length > 0 && (
           <button
             onClick={onClear}
-            className="bg-[#21262d] border border-border text-muted py-[10px] px-[14px] rounded-lg cursor-pointer text-xs font-sans hover:text-text transition-colors"
+            className="bg-[#21262d] border border-border text-muted py-2.5 px-3.5 rounded-lg cursor-pointer text-xs font-sans hover:text-text transition-colors flex items-center gap-1.5"
           >
-            Clear
+            <Trash2 size={13} />
+            <span className="hidden sm:inline">Clear</span>
           </button>
         )}
       </div>

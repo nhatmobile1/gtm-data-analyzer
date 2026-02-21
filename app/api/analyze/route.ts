@@ -1,5 +1,4 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { NextResponse } from "next/server";
 
 const client = new Anthropic();
 
@@ -8,9 +7,9 @@ export async function POST(req: Request) {
     const { messages, dataContext } = await req.json();
 
     if (!messages || !dataContext) {
-      return NextResponse.json(
-        { error: "Missing messages or dataContext" },
-        { status: 400 }
+      return new Response(
+        JSON.stringify({ error: "Missing messages or dataContext" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -26,7 +25,7 @@ Use the data to support every claim. Format responses with clear sections and bu
 
 ${dataContext}`;
 
-    const response = await client.messages.create({
+    const stream = client.messages.stream({
       model: "claude-sonnet-4-20250514",
       max_tokens: 2000,
       system: systemPrompt,
@@ -36,15 +35,47 @@ ${dataContext}`;
       })),
     });
 
-    const content = response.content
-      .map((b) => ("text" in b ? b.text : ""))
-      .join("\n");
+    const encoder = new TextEncoder();
+    const readable = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const event of stream) {
+            if (
+              event.type === "content_block_delta" &&
+              event.delta.type === "text_delta"
+            ) {
+              controller.enqueue(
+                encoder.encode(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`)
+              );
+            }
+          }
+          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+          controller.close();
+        } catch (err) {
+          const message =
+            err instanceof Error ? err.message : "Stream error";
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify({ error: message })}\n\n`)
+          );
+          controller.close();
+        }
+      },
+    });
 
-    return NextResponse.json({ content });
+    return new Response(readable, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+      },
+    });
   } catch (error) {
     console.error("AI analyze error:", error);
     const message =
       error instanceof Error ? error.message : "Unknown error occurred";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return new Response(
+      JSON.stringify({ error: message }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
   }
 }

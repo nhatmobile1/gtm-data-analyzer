@@ -26,6 +26,7 @@ export function useAnalysis() {
   const [fileName, setFileName] = useState("");
   const [selectedDim, setSelectedDim] = useState<string | null>(null);
   const [crossCutDim, setCrossCutDim] = useState<string | null>(null);
+  const [parsing, setParsing] = useState(false);
 
   const funnel: FunnelRow[] = useMemo(() => {
     if (!rawData || !columns || !selectedDim) return [];
@@ -69,6 +70,7 @@ export function useAnalysis() {
 
   const loadCSV = useCallback((file: File) => {
     setFileName(file.name);
+    setParsing(true);
     Papa.parse<CsvRow>(file, {
       header: true,
       skipEmptyLines: true,
@@ -81,6 +83,7 @@ export function useAnalysis() {
         setRawData(data);
         setSelectedDim(detected.channel || hdrs[0]);
         setCrossCutDim(detected.dimensions[0] || null);
+        setParsing(false);
       },
     });
   }, []);
@@ -92,10 +95,12 @@ export function useAnalysis() {
     setFileName("");
     setSelectedDim(null);
     setCrossCutDim(null);
+    setParsing(false);
   }, []);
 
   return {
     rawData,
+    parsing,
     columns,
     headers,
     fileName,

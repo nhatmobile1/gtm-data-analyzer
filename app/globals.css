@@ -38,8 +38,73 @@ body {
   background: var(--color-muted);
 }
 
-/* AI loading animation */
+/* Select option styling for dark theme */
+select option {
+  background: #161b22;
+  color: #e6edf3;
+}
+
+/* Animations */
 @keyframes pulse-dot {
   0%, 100% { opacity: 0.3; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes typewriter-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Tab content scroll fade indicators */
+.tab-scroll-container {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.tab-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+.tab-scroll-wrapper {
+  position: relative;
+}
+.tab-scroll-wrapper::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  background: linear-gradient(to right, transparent, var(--color-base));
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.tab-scroll-wrapper.has-overflow::after {
+  opacity: 1;
 }

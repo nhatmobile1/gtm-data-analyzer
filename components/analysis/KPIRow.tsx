@@ -31,17 +31,20 @@ export default function KPIRow({ totals }: KPIRowProps) {
   ];
 
   return (
-    <div className="grid grid-cols-5 gap-3 px-6 py-4">
-      {kpis.map((kpi) => (
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 px-4 sm:px-6 py-4">
+      {kpis.map((kpi, i) => (
         <div
           key={kpi.label}
-          className="bg-surface border border-border rounded-lg py-[14px] px-4"
+          className="bg-surface border border-border rounded-lg py-3 sm:py-[14px] px-4"
+          style={{
+            animation: `fade-in-up 0.35s ease-out ${i * 0.06}s both`,
+          }}
         >
           <div className="text-[10px] uppercase tracking-wider text-muted mb-1">
             {kpi.label}
           </div>
           <div
-            className={`text-[22px] font-bold font-mono ${kpi.color || "text-text"}`}
+            className={`text-lg sm:text-[22px] font-bold font-mono ${kpi.color || "text-text"}`}
           >
             {kpi.value}
           </div>

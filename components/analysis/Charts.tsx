@@ -10,8 +10,6 @@ import {
   Legend,
   Cell,
   ReferenceLine,
-  FunnelChart,
-  Funnel,
   LabelList,
 } from "recharts";
 import type { FunnelRow, Totals } from "@/lib/types";
@@ -32,7 +30,7 @@ const CHART_COLORS = {
   muted: "#30363d",
   nurture: "#bc8cff",
   text: "#e6edf3",
-  textMuted: "#8b949e",
+  textMuted: "#c9d1d9",
   grid: "#21262d",
 };
 
@@ -62,10 +60,26 @@ const tooltipStyle = {
     fontSize: 12,
     color: "#e6edf3",
   },
+  labelStyle: {
+    color: "#e6edf3",
+  },
+  itemStyle: {
+    color: "#e6edf3",
+  },
+};
+
+const xAxisProps = {
+  tick: { fill: CHART_COLORS.textMuted, fontSize: 10 },
+  axisLine: { stroke: CHART_COLORS.grid },
+  tickLine: false,
+  interval: 0 as const,
 };
 
 export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
   const wonCount = funnel.reduce((s, r) => s + r.wonCount, 0);
+
+  // Filter out empty-name segments
+  const chartData = funnel.filter((r) => r.name && r.name.trim() !== "");
 
   const funnelData = [
     { name: "Touches", value: totals.touches, fill: CHART_COLORS.accent },
@@ -75,23 +89,19 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
   ];
 
   return (
-    <div>
-      <div className="grid grid-cols-2 gap-4">
+    <div style={{ animation: "fade-in 0.3s ease-out both" }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Pipeline Distribution */}
-        <div className="bg-surface border border-border rounded-lg p-4">
+        <div
+          className="bg-surface border border-border rounded-lg p-4"
+          style={{ animation: "fade-in-up 0.4s ease-out both" }}
+        >
           <div className="text-[13px] font-semibold mb-2">
             Pipeline by {selectedDim}
           </div>
-          <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={funnel} margin={{ bottom: 60 }}>
-              <XAxis
-                dataKey="name"
-                tick={{ fill: CHART_COLORS.textMuted, fontSize: 10 }}
-                angle={-35}
-                textAnchor="end"
-                axisLine={{ stroke: CHART_COLORS.grid }}
-                tickLine={false}
-              />
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
+              <XAxis dataKey="name" {...xAxisProps} />
               <YAxis
                 tick={{ fill: CHART_COLORS.textMuted, fontSize: 10 }}
                 tickFormatter={(v) => formatCurrency(v)}
@@ -100,10 +110,11 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
               />
               <Tooltip
                 {...tooltipStyle}
+                cursor={{ fill: "rgba(88, 166, 255, 0.06)" }}
                 formatter={(value) => [formatCurrency(Number(value)), "Pipeline"]}
               />
-              <Bar dataKey="pipeline" radius={[4, 4, 0, 0]}>
-                {funnel.map((r) => (
+              <Bar dataKey="pipeline" radius={[4, 4, 0, 0]} animationDuration={800}>
+                {chartData.map((r) => (
                   <Cell key={r.name} fill={pipelineColor(r.pipelineShare)} />
                 ))}
               </Bar>
@@ -112,20 +123,16 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
         </div>
 
         {/* Touch vs Pipeline Share */}
-        <div className="bg-surface border border-border rounded-lg p-4">
+        <div
+          className="bg-surface border border-border rounded-lg p-4"
+          style={{ animation: "fade-in-up 0.4s ease-out 0.08s both" }}
+        >
           <div className="text-[13px] font-semibold mb-2">
             Touch % vs Pipeline % (Misalignment)
           </div>
-          <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={funnel} margin={{ bottom: 60 }}>
-              <XAxis
-                dataKey="name"
-                tick={{ fill: CHART_COLORS.textMuted, fontSize: 10 }}
-                angle={-35}
-                textAnchor="end"
-                axisLine={{ stroke: CHART_COLORS.grid }}
-                tickLine={false}
-              />
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
+              <XAxis dataKey="name" {...xAxisProps} />
               <YAxis
                 tick={{ fill: CHART_COLORS.textMuted, fontSize: 10 }}
                 tickFormatter={(v) => `${v}%`}
@@ -134,46 +141,47 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
               />
               <Tooltip
                 {...tooltipStyle}
+                cursor={{ fill: "rgba(88, 166, 255, 0.06)" }}
                 formatter={(value, name) => [
                   `${Number(value).toFixed(1)}%`,
                   name,
                 ]}
               />
               <Legend
-                verticalAlign="bottom"
-                wrapperStyle={{ fontSize: 11, color: CHART_COLORS.textMuted }}
+                verticalAlign="top"
+                align="right"
+                wrapperStyle={{ fontSize: 11, color: CHART_COLORS.textMuted, paddingBottom: 8 }}
               />
               <Bar
                 dataKey="touchShare"
                 name="% of Touches"
                 fill={CHART_COLORS.warning}
                 radius={[4, 4, 0, 0]}
+                animationDuration={800}
               />
               <Bar
                 dataKey="pipelineShare"
                 name="% of Pipeline"
                 fill={CHART_COLORS.accent}
                 radius={[4, 4, 0, 0]}
+                animationDuration={800}
+                animationBegin={200}
               />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         {/* Meeting Rate */}
-        <div className="bg-surface border border-border rounded-lg p-4">
+        <div
+          className="bg-surface border border-border rounded-lg p-4"
+          style={{ animation: "fade-in-up 0.4s ease-out 0.16s both" }}
+        >
           <div className="text-[13px] font-semibold mb-2">
             Meeting Rate by {selectedDim}
           </div>
-          <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={funnel} margin={{ bottom: 60 }}>
-              <XAxis
-                dataKey="name"
-                tick={{ fill: CHART_COLORS.textMuted, fontSize: 10 }}
-                angle={-35}
-                textAnchor="end"
-                axisLine={{ stroke: CHART_COLORS.grid }}
-                tickLine={false}
-              />
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
+              <XAxis dataKey="name" {...xAxisProps} />
               <YAxis
                 tick={{ fill: CHART_COLORS.textMuted, fontSize: 10 }}
                 tickFormatter={(v) => `${v}%`}
@@ -182,6 +190,7 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
               />
               <Tooltip
                 {...tooltipStyle}
+                cursor={{ fill: "rgba(88, 166, 255, 0.06)" }}
                 formatter={(value) => [`${Number(value).toFixed(1)}%`, "Mtg Rate"]}
               />
               <ReferenceLine
@@ -196,8 +205,8 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
                   fontSize: 10,
                 }}
               />
-              <Bar dataKey="mtgRate" radius={[4, 4, 0, 0]}>
-                {funnel.map((r) => (
+              <Bar dataKey="mtgRate" radius={[4, 4, 0, 0]} animationDuration={800}>
+                {chartData.map((r) => (
                   <Cell key={r.name} fill={mtgRateColor(r.mtgRate)} />
                 ))}
               </Bar>
@@ -206,20 +215,16 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
         </div>
 
         {/* Pipeline Per Touch */}
-        <div className="bg-surface border border-border rounded-lg p-4">
+        <div
+          className="bg-surface border border-border rounded-lg p-4"
+          style={{ animation: "fade-in-up 0.4s ease-out 0.24s both" }}
+        >
           <div className="text-[13px] font-semibold mb-2">
             Pipeline per Touch (Efficiency)
           </div>
-          <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={funnel} margin={{ bottom: 60 }}>
-              <XAxis
-                dataKey="name"
-                tick={{ fill: CHART_COLORS.textMuted, fontSize: 10 }}
-                angle={-35}
-                textAnchor="end"
-                axisLine={{ stroke: CHART_COLORS.grid }}
-                tickLine={false}
-              />
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
+              <XAxis dataKey="name" {...xAxisProps} />
               <YAxis
                 tick={{ fill: CHART_COLORS.textMuted, fontSize: 10 }}
                 tickFormatter={(v) => formatCurrency(v)}
@@ -228,10 +233,11 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
               />
               <Tooltip
                 {...tooltipStyle}
+                cursor={{ fill: "rgba(88, 166, 255, 0.06)" }}
                 formatter={(value) => [formatCurrency(Number(value)), "$/Touch"]}
               />
-              <Bar dataKey="pipelinePerTouch" radius={[4, 4, 0, 0]}>
-                {funnel.map((r) => (
+              <Bar dataKey="pipelinePerTouch" radius={[4, 4, 0, 0]} animationDuration={800}>
+                {chartData.map((r) => (
                   <Cell key={r.name} fill={pptColor(r.pipelinePerTouch)} />
                 ))}
               </Bar>
@@ -240,34 +246,63 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
         </div>
       </div>
 
-      {/* Funnel Waterfall */}
-      <div className="bg-surface border border-border rounded-lg p-4 mt-4">
+      {/* Funnel Flow — Horizontal Bars */}
+      <div
+        className="bg-surface border border-border rounded-lg p-4 mt-4"
+        style={{ animation: "fade-in-up 0.4s ease-out 0.32s both" }}
+      >
         <div className="text-[13px] font-semibold mb-2">
           Overall Funnel Flow
         </div>
-        <ResponsiveContainer width="100%" height={350}>
-          <FunnelChart>
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart
+            data={funnelData}
+            layout="vertical"
+            margin={{ top: 5, right: 80, bottom: 5, left: 10 }}
+          >
+            <XAxis type="number" hide />
+            <YAxis
+              type="category"
+              dataKey="name"
+              tick={{ fill: CHART_COLORS.text, fontSize: 13, fontWeight: 600 }}
+              axisLine={false}
+              tickLine={false}
+              width={110}
+            />
             <Tooltip
               {...tooltipStyle}
+              cursor={{ fill: "rgba(88, 166, 255, 0.06)" }}
               formatter={(value) => [Number(value).toLocaleString(), "Count"]}
             />
-            <Funnel dataKey="value" data={funnelData} isAnimationActive>
+            <Bar dataKey="value" radius={[0, 6, 6, 0]} animationDuration={800}>
+              {funnelData.map((entry) => (
+                <Cell key={entry.name} fill={entry.fill} />
+              ))}
               <LabelList
+                dataKey="value"
                 position="right"
-                fill={CHART_COLORS.text}
+                fill={CHART_COLORS.textMuted}
                 fontSize={12}
                 formatter={(value) => Number(value).toLocaleString()}
               />
-              <LabelList
-                position="center"
-                fill={CHART_COLORS.text}
-                fontSize={13}
-                fontWeight={600}
-                dataKey="name"
-              />
-            </Funnel>
-          </FunnelChart>
+            </Bar>
+          </BarChart>
         </ResponsiveContainer>
+        <div className="flex flex-wrap gap-x-6 gap-y-1 mt-2 px-2">
+          {funnelData.slice(0, -1).map((stage, i) => {
+            const next = funnelData[i + 1];
+            const rate =
+              stage.value > 0
+                ? ((next.value / stage.value) * 100).toFixed(1)
+                : "0";
+            return (
+              <div key={stage.name} className="text-xs text-muted">
+                {stage.name} → {next.name}:{" "}
+                <span className="text-text font-semibold">{rate}%</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
