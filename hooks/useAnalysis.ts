@@ -68,25 +68,52 @@ export function useAnalysis() {
     return buildDataContext(rawData, columns, funnel, totals, dropOff);
   }, [rawData, columns, funnel, totals, dropOff]);
 
-  const loadCSV = useCallback((file: File) => {
-    setFileName(file.name);
-    setParsing(true);
-    Papa.parse<CsvRow>(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (result) => {
-        const data = result.data;
-        const hdrs = result.meta.fields || [];
-        setHeaders(hdrs);
-        const detected = detectColumns(hdrs, data.slice(0, 100));
-        setColumns(detected);
-        setRawData(data);
-        setSelectedDim(detected.channel || hdrs[0]);
-        setCrossCutDim(detected.dimensions[0] || null);
-        setParsing(false);
-      },
-    });
-  }, []);
+  const applyParsed = useCallback(
+    (name: string, data: CsvRow[], hdrs: string[]) => {
+      setFileName(name);
+      setHeaders(hdrs);
+      const detected = detectColumns(hdrs, data.slice(0, 100));
+      setColumns(detected);
+      setRawData(data);
+      setSelectedDim(detected.channel || hdrs[0]);
+      setCrossCutDim(detected.dimensions[0] || null);
+      setParsing(false);
+    },
+    // setState setters are stable — empty deps is intentional
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const loadCSV = useCallback(
+    (file: File) => {
+      setFileName(file.name);
+      setParsing(true);
+      Papa.parse<CsvRow>(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (result) => {
+          applyParsed(file.name, result.data, result.meta.fields || []);
+        },
+      });
+    },
+    [applyParsed]
+  );
+
+  const loadCSVText = useCallback(
+    (name: string, csvText: string) => {
+      setParsing(true);
+      // Use setTimeout to yield to React so the parsing spinner renders
+      // before the synchronous parse blocks the main thread
+      setTimeout(() => {
+        const result = Papa.parse<CsvRow>(csvText, {
+          header: true,
+          skipEmptyLines: true,
+        });
+        applyParsed(name, result.data, result.meta.fields || []);
+      }, 0);
+    },
+    [applyParsed]
+  );
 
   const reset = useCallback(() => {
     setRawData(null);
@@ -116,6 +143,7 @@ export function useAnalysis() {
     setSelectedDim,
     setCrossCutDim,
     loadCSV,
+    loadCSVText,
     reset,
   };
 }

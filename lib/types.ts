@@ -62,3 +62,28 @@ export interface Message {
 }
 
 export type CsvRow = Record<string, string>;
+
+// ── Dashboard & Folder types ──
+
+export interface DashboardEntry {
+  id: string;
+  name: string;
+  fileName: string;
+  date: string;
+  updatedAt: string;
+  rowCount: number;
+  csvText: string;
+  folderId: string | null;
+}
+
+export interface DashboardFolder {
+  id: string;
+  name: string;
+  createdAt: string;
+}
+
+export interface DashboardStore {
+  version: 2;
+  dashboards: DashboardEntry[];
+  folders: DashboardFolder[];
+}

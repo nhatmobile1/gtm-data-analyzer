@@ -2,9 +2,21 @@
 
 import { useCallback, useRef, useState } from "react";
 import { Upload, BarChart3, Brain, GitFork, Target } from "lucide-react";
+import type { DashboardEntry, DashboardFolder } from "@/lib/types";
+import DashboardBrowser from "./DashboardBrowser";
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
+  dashboards: DashboardEntry[];
+  folders: DashboardFolder[];
+  onDashboardSelect: (id: string) => void;
+  onDashboardRemove: (id: string) => void;
+  onDashboardRename: (id: string, newName: string) => void;
+  onDashboardMove: (id: string, folderId: string | null) => void;
+  onFolderCreate: (name: string) => void;
+  onFolderRename: (id: string, newName: string) => void;
+  onFolderRemove: (id: string) => void;
+  onClearAll: () => void;
 }
 
 const FEATURES = [
@@ -30,7 +42,19 @@ const FEATURES = [
   },
 ];
 
-export default function FileUpload({ onFileSelect }: FileUploadProps) {
+export default function FileUpload({
+  onFileSelect,
+  dashboards,
+  folders,
+  onDashboardSelect,
+  onDashboardRemove,
+  onDashboardRename,
+  onDashboardMove,
+  onFolderCreate,
+  onFolderRename,
+  onFolderRemove,
+  onClearAll,
+}: FileUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -113,6 +137,20 @@ export default function FileUpload({ onFileSelect }: FileUploadProps) {
           onChange={handleInputChange}
         />
       </div>
+
+      {/* Dashboard Browser */}
+      <DashboardBrowser
+        dashboards={dashboards}
+        folders={folders}
+        onDashboardSelect={onDashboardSelect}
+        onDashboardRemove={onDashboardRemove}
+        onDashboardRename={onDashboardRename}
+        onDashboardMove={onDashboardMove}
+        onFolderCreate={onFolderCreate}
+        onFolderRename={onFolderRename}
+        onFolderRemove={onFolderRemove}
+        onClearAll={onClearAll}
+      />
 
       {/* Feature Cards */}
       <div

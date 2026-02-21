@@ -5,6 +5,7 @@ import { BarChart3, Upload } from "lucide-react";
 import { formatNumber } from "@/lib/formatting";
 import { useAIChat } from "@/hooks/useAIChat";
 import type { useAnalysis } from "@/hooks/useAnalysis";
+import EditableName from "@/components/ui/EditableName";
 import TabBar from "@/components/ui/TabBar";
 import KPIRow from "@/components/analysis/KPIRow";
 import FunnelTable from "@/components/analysis/FunnelTable";
@@ -25,9 +26,17 @@ const TABS = [
 
 interface DashboardProps {
   analysis: ReturnType<typeof useAnalysis>;
+  dashboardName: string;
+  onRenameDashboard: (newName: string) => void;
+  onReset: () => void;
 }
 
-export default function Dashboard({ analysis }: DashboardProps) {
+export default function Dashboard({
+  analysis,
+  dashboardName,
+  onRenameDashboard,
+  onReset,
+}: DashboardProps) {
   const [activeTab, setActiveTab] = useState("ai");
   const aiChat = useAIChat(analysis.dataContext);
 
@@ -35,18 +44,20 @@ export default function Dashboard({ analysis }: DashboardProps) {
     <div className="min-h-screen text-[13px]" style={{ animation: "fade-in 0.3s ease-out both" }}>
       {/* Header */}
       <div className="py-3 sm:py-4 px-4 sm:px-6 border-b border-border flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2 min-w-0">
+        <div className="flex items-center gap-1.5 min-w-0">
           <BarChart3 size={18} className="text-accent shrink-0" />
-          <span className="font-bold text-sm sm:text-base truncate">
-            Marketing Data Analyzer
-          </span>
-          <span className="text-muted text-xs hidden sm:inline">
-            {analysis.fileName} &middot;{" "}
+          <EditableName
+            value={dashboardName}
+            onSave={onRenameDashboard}
+            className="font-bold text-sm sm:text-base"
+          />
+          <span className="text-muted text-xs hidden sm:inline shrink-0">
+            | {analysis.fileName} &middot;{" "}
             {formatNumber(analysis.rawData?.length ?? 0)} records
           </span>
         </div>
         <button
-          onClick={analysis.reset}
+          onClick={onReset}
           className="bg-[#21262d] border border-border text-muted py-1.5 px-3 rounded-md cursor-pointer text-xs hover:text-text transition-colors flex items-center gap-1.5 shrink-0"
         >
           <Upload size={13} />
