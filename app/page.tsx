@@ -34,8 +34,7 @@ export default function Home() {
       };
       reader.readAsText(file);
     },
-    // Depend on stable individual functions, not the entire hook objects
-    [store.saveDashboard, analysis.loadCSVText, analysis.setError]
+    [store, analysis]
   );
 
   const handleDashboardSelect = useCallback(
@@ -46,7 +45,7 @@ export default function Home() {
         analysis.loadCSVText(entry.fileName, entry.csvText);
       }
     },
-    [store.getDashboard, analysis.loadCSVText]
+    [store, analysis]
   );
 
   const handleRenameDashboard = useCallback(
@@ -55,13 +54,13 @@ export default function Home() {
         store.renameDashboard(activeDashboardId, newName);
       }
     },
-    [activeDashboardId, store.renameDashboard]
+    [activeDashboardId, store]
   );
 
   const handleReset = useCallback(() => {
     setActiveDashboardId(null);
     analysis.reset();
-  }, [analysis.reset]);
+  }, [analysis]);
 
   const notificationBanner = store.notifications.length > 0 ? (
     <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">

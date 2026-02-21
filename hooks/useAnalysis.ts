@@ -87,8 +87,6 @@ export function useAnalysis() {
       setCrossCutDim(detected.dimensions[0] || null);
       setParsing(false);
     },
-    // setState setters are stable — empty deps is intentional
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 

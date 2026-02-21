@@ -44,7 +44,8 @@ export default function DashboardBrowser({
   onImport,
 }: DashboardBrowserProps) {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
-  const [expanded, setExpanded] = useState<Set<string>>(() => new Set(folders.map((f) => f.id)));
+  // Track collapsed folders instead of expanded — new folders auto-expand without needing an effect
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [creatingFolder, setCreatingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const folderInputRef = useRef<HTMLInputElement>(null);
@@ -62,19 +63,10 @@ export default function DashboardBrowser({
     if (renamingFolderId) folderRenameRef.current?.select();
   }, [renamingFolderId]);
 
-  // Auto-expand when new folders are added
-  useEffect(() => {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      folders.forEach((f) => next.add(f.id));
-      return next;
-    });
-  }, [folders]);
-
   if (dashboards.length === 0 && folders.length === 0) return null;
 
   const toggleFolder = (id: string) => {
-    setExpanded((prev) => {
+    setCollapsed((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
@@ -176,7 +168,7 @@ export default function DashboardBrowser({
 
         {/* Folders */}
         {folders.map((folder) => {
-          const isExpanded = expanded.has(folder.id);
+          const isExpanded = !collapsed.has(folder.id);
           const folderDashboards = getDashboardsInFolder(folder.id);
           const folderMenuItems: MenuItem[] = [
             {

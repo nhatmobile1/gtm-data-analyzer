@@ -19,7 +19,7 @@ import {
   pipelinePerTouchColor,
 } from "@/lib/formatting";
 import Callout from "@/components/ui/Callout";
-import { CHART_COLORS, TOOLTIP_STYLE, CURSOR_STYLE, LEGEND_STYLE } from "@/lib/chartTheme";
+import { CHART_COLORS, TOOLTIP_STYLE, LEGEND_STYLE } from "@/lib/chartTheme";
 
 interface CrossCutExplorerProps {
   crossCut: FunnelRow[];

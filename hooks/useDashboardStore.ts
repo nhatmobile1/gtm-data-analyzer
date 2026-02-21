@@ -117,11 +117,11 @@ export function useDashboardStore() {
   const [notifications, setNotifications] = useState<string[]>([]);
   // Ref mirrors state for synchronous reads (avoids stale closures)
   const storeRef = useRef<DashboardStore>(emptyStore());
-
+  // Hydrate from localStorage on mount — standard SSR-safe initialization pattern
   useEffect(() => {
     const loaded = loadFromStorage();
     storeRef.current = loaded;
-    setStore(loaded);
+    setStore(loaded); // eslint-disable-line react-hooks/set-state-in-effect
   }, []);
 
   const update = useCallback(
