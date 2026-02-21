@@ -79,34 +79,39 @@ export default function Dashboard({
 
       {/* Tab Content */}
       <div className="py-4 sm:py-5 px-4 sm:px-6">
-        {activeTab === "ai" && (
+        <div className={activeTab === "ai" ? "" : "hidden"}>
           <AIAnalyst
             messages={aiChat.messages}
             loading={aiChat.loading}
             streamingContent={aiChat.streamingContent}
             onAsk={aiChat.ask}
             onClear={aiChat.clear}
+            columns={analysis.columns}
           />
-        )}
+        </div>
 
-        {activeTab === "funnel" && analysis.selectedDim && (
-          <FunnelTable
-            funnel={analysis.funnel}
-            selectedDim={analysis.selectedDim}
-            allDimOptions={analysis.allDimOptions}
-            onDimChange={analysis.setSelectedDim}
-          />
-        )}
+        <div className={activeTab === "funnel" ? "" : "hidden"}>
+          {analysis.selectedDim && (
+            <FunnelTable
+              funnel={analysis.funnel}
+              selectedDim={analysis.selectedDim}
+              allDimOptions={analysis.allDimOptions}
+              onDimChange={analysis.setSelectedDim}
+            />
+          )}
+        </div>
 
-        {activeTab === "charts" && analysis.totals && (
-          <Charts
-            funnel={analysis.funnel}
-            totals={analysis.totals}
-            selectedDim={analysis.selectedDim || "Channel"}
-          />
-        )}
+        <div className={activeTab === "charts" ? "" : "hidden"}>
+          {analysis.totals && (
+            <Charts
+              funnel={analysis.funnel}
+              totals={analysis.totals}
+              selectedDim={analysis.selectedDim || "Channel"}
+            />
+          )}
+        </div>
 
-        {activeTab === "crosscut" && (
+        <div className={activeTab === "crosscut" ? "" : "hidden"}>
           <CrossCutExplorer
             crossCut={analysis.crossCut}
             crossCutDim={analysis.crossCutDim}
@@ -114,18 +119,25 @@ export default function Dashboard({
             allDimOptions={analysis.allDimOptions}
             onDimChange={analysis.setCrossCutDim}
           />
-        )}
+        </div>
 
-        {activeTab === "dropoff" && (
+        <div className={activeTab === "dropoff" ? "" : "hidden"}>
           <DropOffAnalysis
             dropOff={analysis.dropOff}
             totals={analysis.totals}
           />
-        )}
+        </div>
 
-        {activeTab === "config" && analysis.columns && (
-          <FieldMapping columns={analysis.columns} />
-        )}
+        <div className={activeTab === "config" ? "" : "hidden"}>
+          {analysis.columns && (
+            <FieldMapping
+              columns={analysis.columns}
+              headers={analysis.headers}
+              onColumnsChange={analysis.updateColumns}
+              rawData={analysis.rawData || []}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
