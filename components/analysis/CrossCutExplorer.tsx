@@ -19,6 +19,7 @@ import {
   pipelinePerTouchColor,
 } from "@/lib/formatting";
 import Callout from "@/components/ui/Callout";
+import { CHART_COLORS, TOOLTIP_STYLE, CURSOR_STYLE, LEGEND_STYLE } from "@/lib/chartTheme";
 
 interface CrossCutExplorerProps {
   crossCut: FunnelRow[];
@@ -28,12 +29,6 @@ interface CrossCutExplorerProps {
   onDimChange: (dim: string) => void;
 }
 
-const CHART_COLORS = {
-  accent: "#58a6ff",
-  positive: "#3fb950",
-  textMuted: "#c9d1d9",
-  grid: "#21262d",
-};
 
 export default function CrossCutExplorer({
   crossCut,
@@ -192,18 +187,12 @@ export default function CrossCutExplorer({
                 }}
               />
               <Tooltip
-                contentStyle={{
-                  backgroundColor: "#161b22",
-                  border: "1px solid #30363d",
-                  borderRadius: 6,
-                  fontSize: 12,
-                  color: "#e6edf3",
-                }}
+                {...TOOLTIP_STYLE}
               />
               <Legend
                 verticalAlign="top"
                 align="right"
-                wrapperStyle={{ fontSize: 11, color: CHART_COLORS.textMuted, paddingBottom: 8 }}
+                wrapperStyle={LEGEND_STYLE}
               />
               <Bar
                 yAxisId="left"

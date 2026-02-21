@@ -14,6 +14,7 @@ import {
 } from "recharts";
 import type { FunnelRow, Totals } from "@/lib/types";
 import { formatCurrency } from "@/lib/formatting";
+import { CHART_COLORS, TOOLTIP_STYLE, CURSOR_STYLE, X_AXIS_PROPS, Y_AXIS_TICK, LEGEND_STYLE } from "@/lib/chartTheme";
 
 interface ChartsProps {
   funnel: FunnelRow[];
@@ -21,18 +22,6 @@ interface ChartsProps {
   selectedDim: string;
 }
 
-const CHART_COLORS = {
-  accent: "#58a6ff",
-  accentDark: "#1f6feb",
-  positive: "#3fb950",
-  negative: "#f85149",
-  warning: "#d29922",
-  muted: "#30363d",
-  nurture: "#bc8cff",
-  text: "#e6edf3",
-  textMuted: "#c9d1d9",
-  grid: "#21262d",
-};
 
 function pipelineColor(share: number): string {
   if (share > 40) return CHART_COLORS.accent;
@@ -52,28 +41,6 @@ function pptColor(ppt: number): string {
   return CHART_COLORS.accentDark;
 }
 
-const tooltipStyle = {
-  contentStyle: {
-    backgroundColor: "#161b22",
-    border: "1px solid #30363d",
-    borderRadius: 6,
-    fontSize: 12,
-    color: "#e6edf3",
-  },
-  labelStyle: {
-    color: "#e6edf3",
-  },
-  itemStyle: {
-    color: "#e6edf3",
-  },
-};
-
-const xAxisProps = {
-  tick: { fill: CHART_COLORS.textMuted, fontSize: 10 },
-  axisLine: { stroke: CHART_COLORS.grid },
-  tickLine: false,
-  interval: 0 as const,
-};
 
 export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
   const wonCount = funnel.reduce((s, r) => s + r.wonCount, 0);
@@ -101,16 +68,16 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
           </div>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
-              <XAxis dataKey="name" {...xAxisProps} />
+              <XAxis dataKey="name" {...X_AXIS_PROPS} />
               <YAxis
-                tick={{ fill: CHART_COLORS.textMuted, fontSize: 10 }}
+                tick={Y_AXIS_TICK}
                 tickFormatter={(v) => formatCurrency(v)}
                 axisLine={false}
                 tickLine={false}
               />
               <Tooltip
-                {...tooltipStyle}
-                cursor={{ fill: "rgba(88, 166, 255, 0.06)" }}
+                {...TOOLTIP_STYLE}
+                cursor={CURSOR_STYLE}
                 formatter={(value) => [formatCurrency(Number(value)), "Pipeline"]}
               />
               <Bar dataKey="pipeline" radius={[4, 4, 0, 0]} animationDuration={800}>
@@ -132,16 +99,16 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
           </div>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
-              <XAxis dataKey="name" {...xAxisProps} />
+              <XAxis dataKey="name" {...X_AXIS_PROPS} />
               <YAxis
-                tick={{ fill: CHART_COLORS.textMuted, fontSize: 10 }}
+                tick={Y_AXIS_TICK}
                 tickFormatter={(v) => `${v}%`}
                 axisLine={false}
                 tickLine={false}
               />
               <Tooltip
-                {...tooltipStyle}
-                cursor={{ fill: "rgba(88, 166, 255, 0.06)" }}
+                {...TOOLTIP_STYLE}
+                cursor={CURSOR_STYLE}
                 formatter={(value, name) => [
                   `${Number(value).toFixed(1)}%`,
                   name,
@@ -150,7 +117,7 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
               <Legend
                 verticalAlign="top"
                 align="right"
-                wrapperStyle={{ fontSize: 11, color: CHART_COLORS.textMuted, paddingBottom: 8 }}
+                wrapperStyle={LEGEND_STYLE}
               />
               <Bar
                 dataKey="touchShare"
@@ -181,16 +148,16 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
           </div>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
-              <XAxis dataKey="name" {...xAxisProps} />
+              <XAxis dataKey="name" {...X_AXIS_PROPS} />
               <YAxis
-                tick={{ fill: CHART_COLORS.textMuted, fontSize: 10 }}
+                tick={Y_AXIS_TICK}
                 tickFormatter={(v) => `${v}%`}
                 axisLine={false}
                 tickLine={false}
               />
               <Tooltip
-                {...tooltipStyle}
-                cursor={{ fill: "rgba(88, 166, 255, 0.06)" }}
+                {...TOOLTIP_STYLE}
+                cursor={CURSOR_STYLE}
                 formatter={(value) => [`${Number(value).toFixed(1)}%`, "Mtg Rate"]}
               />
               <ReferenceLine
@@ -224,16 +191,16 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
           </div>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
-              <XAxis dataKey="name" {...xAxisProps} />
+              <XAxis dataKey="name" {...X_AXIS_PROPS} />
               <YAxis
-                tick={{ fill: CHART_COLORS.textMuted, fontSize: 10 }}
+                tick={Y_AXIS_TICK}
                 tickFormatter={(v) => formatCurrency(v)}
                 axisLine={false}
                 tickLine={false}
               />
               <Tooltip
-                {...tooltipStyle}
-                cursor={{ fill: "rgba(88, 166, 255, 0.06)" }}
+                {...TOOLTIP_STYLE}
+                cursor={CURSOR_STYLE}
                 formatter={(value) => [formatCurrency(Number(value)), "$/Touch"]}
               />
               <Bar dataKey="pipelinePerTouch" radius={[4, 4, 0, 0]} animationDuration={800}>
@@ -270,8 +237,8 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
               width={110}
             />
             <Tooltip
-              {...tooltipStyle}
-              cursor={{ fill: "rgba(88, 166, 255, 0.06)" }}
+              {...TOOLTIP_STYLE}
+              cursor={CURSOR_STYLE}
               formatter={(value) => [Number(value).toLocaleString(), "Count"]}
             />
             <Bar dataKey="value" radius={[0, 6, 6, 0]} animationDuration={800}>
