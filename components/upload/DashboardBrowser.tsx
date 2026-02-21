@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import type { DashboardEntry, DashboardFolder } from "@/lib/types";
 import DropdownMenu, { type MenuItem } from "@/components/ui/DropdownMenu";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import DashboardRow from "./DashboardRow";
 
 interface DashboardBrowserProps {
@@ -39,6 +40,7 @@ export default function DashboardBrowser({
   onFolderRemove,
   onClearAll,
 }: DashboardBrowserProps) {
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set(folders.map((f) => f.id)));
   const [creatingFolder, setCreatingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
@@ -124,7 +126,7 @@ export default function DashboardBrowser({
             New Folder
           </button>
           <button
-            onClick={onClearAll}
+            onClick={() => setShowClearConfirm(true)}
             className="flex items-center gap-1.5 text-xs text-muted hover:text-negative transition-colors cursor-pointer"
           >
             <Trash2 size={12} />
@@ -264,6 +266,14 @@ export default function DashboardBrowser({
           />
         ))}
       </div>
+
+      <ConfirmDialog
+        open={showClearConfirm}
+        title="Clear all dashboards?"
+        message="This will permanently delete all saved dashboards and folders. This cannot be undone."
+        onConfirm={() => { onClearAll(); setShowClearConfirm(false); }}
+        onCancel={() => setShowClearConfirm(false)}
+      />
     </div>
   );
 }

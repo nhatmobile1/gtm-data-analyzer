@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { BarChart3, X, FolderClosed, FolderMinus, Pencil, Trash2 } from "lucide-react";
 import type { DashboardEntry, DashboardFolder } from "@/lib/types";
 import DropdownMenu, { type MenuItem } from "@/components/ui/DropdownMenu";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 interface DashboardRowProps {
   dashboard: DashboardEntry;
@@ -38,6 +39,7 @@ export default function DashboardRow({
 }: DashboardRowProps) {
   const [renaming, setRenaming] = useState(false);
   const [draft, setDraft] = useState(dashboard.name);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -96,7 +98,7 @@ export default function DashboardRow({
     {
       label: "Delete",
       icon: <Trash2 size={12} />,
-      onClick: () => onRemove(dashboard.id),
+      onClick: () => setShowDeleteConfirm(true),
       danger: true,
       separator: true,
     },
@@ -141,13 +143,21 @@ export default function DashboardRow({
       >
         <DropdownMenu items={menuItems} />
         <button
-          onClick={() => onRemove(dashboard.id)}
+          onClick={() => setShowDeleteConfirm(true)}
           className="p-1 text-muted hover:text-negative transition-colors cursor-pointer"
           title="Delete dashboard"
         >
           <X size={14} />
         </button>
       </div>
+
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        title="Delete dashboard?"
+        message={`"${dashboard.name}" will be permanently deleted. This cannot be undone.`}
+        onConfirm={() => { onRemove(dashboard.id); setShowDeleteConfirm(false); }}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </div>
   );
 }
