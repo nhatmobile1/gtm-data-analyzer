@@ -122,6 +122,18 @@ export function useAnalysis() {
     [applyParsed]
   );
 
+  const updateColumns = useCallback((newColumns: DetectedColumns) => {
+    setColumns(newColumns);
+    // Re-detect dimensions from all headers not assigned to roles
+    if (newColumns.channel && selectedDim !== newColumns.channel &&
+        !newColumns.dimensions.includes(selectedDim || "")) {
+      setSelectedDim(newColumns.channel);
+    }
+    if (!newColumns.dimensions.includes(crossCutDim || "")) {
+      setCrossCutDim(newColumns.dimensions[0] || null);
+    }
+  }, [selectedDim, crossCutDim]);
+
   const reset = useCallback(() => {
     setRawData(null);
     setColumns(null);
@@ -153,6 +165,7 @@ export function useAnalysis() {
     setCrossCutDim,
     setError,
     loadCSVText,
+    updateColumns,
     reset,
   };
 }
