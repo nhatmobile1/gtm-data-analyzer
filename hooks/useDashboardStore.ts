@@ -114,6 +114,7 @@ function saveToStorage(store: DashboardStore): boolean {
 
 export function useDashboardStore() {
   const [store, setStore] = useState<DashboardStore>(emptyStore);
+  const [notifications, setNotifications] = useState<string[]>([]);
   // Ref mirrors state for synchronous reads (avoids stale closures)
   const storeRef = useRef<DashboardStore>(emptyStore());
 
@@ -171,6 +172,9 @@ export function useDashboardStore() {
                 : d
             ),
           };
+        }
+        if (prev.dashboards.length >= MAX_DASHBOARDS) {
+          setNotifications(n => [...n, "Maximum dashboard limit reached. Oldest dashboard was replaced."]);
         }
         return {
           ...prev,
@@ -272,6 +276,10 @@ export function useDashboardStore() {
     [update]
   );
 
+  const clearNotification = useCallback((index: number) => {
+    setNotifications(n => n.filter((_, i) => i !== index));
+  }, []);
+
   // ── Bulk ──
 
   const clearAll = useCallback(() => {
@@ -284,6 +292,7 @@ export function useDashboardStore() {
   return {
     dashboards: store.dashboards,
     folders: store.folders,
+    notifications,
     saveDashboard,
     removeDashboard,
     renameDashboard,
@@ -293,5 +302,6 @@ export function useDashboardStore() {
     renameFolder,
     removeFolder,
     clearAll,
+    clearNotification,
   };
 }

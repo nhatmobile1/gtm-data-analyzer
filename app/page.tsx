@@ -35,7 +35,7 @@ export default function Home() {
       reader.readAsText(file);
     },
     // Depend on stable individual functions, not the entire hook objects
-    [store.saveDashboard, analysis.loadCSVText]
+    [store.saveDashboard, analysis.loadCSVText, analysis.setError]
   );
 
   const handleDashboardSelect = useCallback(
@@ -63,61 +63,84 @@ export default function Home() {
     analysis.reset();
   }, [analysis.reset]);
 
+  const notificationBanner = store.notifications.length > 0 ? (
+    <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+      {store.notifications.map((msg, i) => (
+        <div key={i} className="bg-warning/15 border border-warning/30 text-warning text-xs py-2 px-3 rounded-lg flex items-center gap-2 max-w-sm">
+          <span className="flex-1">{msg}</span>
+          <button onClick={() => store.clearNotification(i)} className="text-warning/60 hover:text-warning">&#x2715;</button>
+        </div>
+      ))}
+    </div>
+  ) : null;
+
   if (analysis.parsing) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-3">
-        <Loader2
-          size={28}
-          className="text-accent animate-spin"
-        />
-        <div className="text-sm text-muted">
-          Parsing {analysis.fileName}...
+      <>
+        {notificationBanner}
+        <div className="min-h-screen flex flex-col items-center justify-center gap-3">
+          <Loader2
+            size={28}
+            className="text-accent animate-spin"
+          />
+          <div className="text-sm text-muted">
+            Parsing {analysis.fileName}...
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (analysis.error) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-3 px-4">
-        <div className="text-negative text-sm font-semibold">Error</div>
-        <div className="text-muted text-sm text-center max-w-md">{analysis.error}</div>
-        <button
-          onClick={() => { analysis.setError(null); analysis.reset(); }}
-          className="mt-2 py-1.5 px-4 rounded-md text-xs bg-surface border border-border text-muted hover:text-text transition-colors"
-        >
-          Try Again
-        </button>
-      </div>
+      <>
+        {notificationBanner}
+        <div className="min-h-screen flex flex-col items-center justify-center gap-3 px-4">
+          <div className="text-negative text-sm font-semibold">Error</div>
+          <div className="text-muted text-sm text-center max-w-md">{analysis.error}</div>
+          <button
+            onClick={() => { analysis.setError(null); analysis.reset(); }}
+            className="mt-2 py-1.5 px-4 rounded-md text-xs bg-surface border border-border text-muted hover:text-text transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </>
     );
   }
 
   if (!analysis.rawData) {
     return (
-      <FileUpload
-        onFileSelect={handleFileSelect}
-        dashboards={store.dashboards}
-        folders={store.folders}
-        onDashboardSelect={handleDashboardSelect}
-        onDashboardRemove={store.removeDashboard}
-        onDashboardRename={store.renameDashboard}
-        onDashboardMove={store.moveDashboard}
-        onFolderCreate={store.createFolder}
-        onFolderRename={store.renameFolder}
-        onFolderRemove={store.removeFolder}
-        onClearAll={store.clearAll}
-      />
+      <>
+        {notificationBanner}
+        <FileUpload
+          onFileSelect={handleFileSelect}
+          dashboards={store.dashboards}
+          folders={store.folders}
+          onDashboardSelect={handleDashboardSelect}
+          onDashboardRemove={store.removeDashboard}
+          onDashboardRename={store.renameDashboard}
+          onDashboardMove={store.moveDashboard}
+          onFolderCreate={store.createFolder}
+          onFolderRename={store.renameFolder}
+          onFolderRemove={store.removeFolder}
+          onClearAll={store.clearAll}
+        />
+      </>
     );
   }
 
   const dashboardName = activeDashboard?.name || analysis.fileName.replace(/\.csv$/i, "");
 
   return (
-    <Dashboard
-      analysis={analysis}
-      dashboardName={dashboardName}
-      onRenameDashboard={handleRenameDashboard}
-      onReset={handleReset}
-    />
+    <>
+      {notificationBanner}
+      <Dashboard
+        analysis={analysis}
+        dashboardName={dashboardName}
+        onRenameDashboard={handleRenameDashboard}
+        onReset={handleReset}
+      />
+    </>
   );
 }
