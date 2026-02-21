@@ -63,7 +63,8 @@ export default function EditableName({
         onBlur={save}
         onKeyDown={handleKeyDown}
         maxLength={maxLength}
-        className={`bg-transparent border-b border-accent outline-none text-text ${className}`}
+        className={`bg-transparent border-b border-accent outline-none ${className}`}
+        style={{ color: "var(--color-text)" }}
         style={{ width: `${Math.max(draft.length + 1, 4)}ch` }}
       />
     );
@@ -71,7 +72,8 @@ export default function EditableName({
 
   return (
     <span
-      className={`group/name inline-flex items-center gap-1 cursor-pointer hover:text-accent/80 transition-colors text-text ${className}`}
+      className={`group/name inline-flex items-center gap-1 cursor-pointer hover:text-accent/80 transition-colors ${className}`}
+      style={{ color: "var(--color-text)" }}
       onClick={() => setEditing(true)}
       title="Click to rename"
     >
