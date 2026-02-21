@@ -85,21 +85,6 @@ export function useAnalysis() {
     []
   );
 
-  const loadCSV = useCallback(
-    (file: File) => {
-      setFileName(file.name);
-      setParsing(true);
-      Papa.parse<CsvRow>(file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (result) => {
-          applyParsed(file.name, result.data, result.meta.fields || []);
-        },
-      });
-    },
-    [applyParsed]
-  );
-
   const loadCSVText = useCallback(
     (name: string, csvText: string) => {
       setParsing(true);
@@ -143,7 +128,6 @@ export function useAnalysis() {
     dataContext,
     setSelectedDim,
     setCrossCutDim,
-    loadCSV,
     loadCSVText,
     reset,
   };

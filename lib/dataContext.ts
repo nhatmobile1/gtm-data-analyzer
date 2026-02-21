@@ -53,7 +53,7 @@ export function buildDataContext(
   return `MARKETING PERFORMANCE DATA SUMMARY (${rawData.length} records):
 
 OVERALL FUNNEL:
-${totals.touches.toLocaleString()} touches → ${totals.meetings.toLocaleString()} meetings (${((totals.meetings / totals.touches) * 100).toFixed(1)}%) → ${totals.opps.toLocaleString()} opportunities (${((totals.opps / totals.meetings) * 100).toFixed(1)}% mtg→opp) → $${Math.round(totals.pipeline).toLocaleString()} pipeline → $${Math.round(totals.closedWon).toLocaleString()} closed won
+${totals.touches.toLocaleString()} touches → ${totals.meetings.toLocaleString()} meetings (${totals.touches > 0 ? ((totals.meetings / totals.touches) * 100).toFixed(1) : "0.0"}%) → ${totals.opps.toLocaleString()} opportunities (${totals.meetings > 0 ? ((totals.opps / totals.meetings) * 100).toFixed(1) : "0.0"}% mtg→opp) → $${Math.round(totals.pipeline).toLocaleString()} pipeline → $${Math.round(totals.closedWon).toLocaleString()} closed won
 
 CHANNEL FUNNEL (sorted by pipeline):
 ${channelTable}
