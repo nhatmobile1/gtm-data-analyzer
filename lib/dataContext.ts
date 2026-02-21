@@ -8,10 +8,7 @@ export function buildDataContext(
   totals: Totals,
   dropOff: DropOffResult | null
 ): string {
-  // Channel funnel table
-  const channelFunnel = columns.channel
-    ? analyzeFunnel(rawData, columns, columns.channel)
-    : funnel;
+  const channelFunnel = funnel;
 
   const channelTable = channelFunnel
     .map(

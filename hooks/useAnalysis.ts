@@ -64,10 +64,16 @@ export function useAnalysis() {
     ].filter(Boolean) as string[];
   }, [columns]);
 
+  const channelFunnel: FunnelRow[] = useMemo(() => {
+    if (!rawData || !columns || !columns.channel) return funnel;
+    if (selectedDim === columns.channel) return funnel;
+    return analyzeFunnel(rawData, columns, columns.channel);
+  }, [rawData, columns, selectedDim, funnel]);
+
   const dataContext: string = useMemo(() => {
-    if (!rawData || !columns || !funnel.length || !totals) return "";
-    return buildDataContext(rawData, columns, funnel, totals, dropOff);
-  }, [rawData, columns, funnel, totals, dropOff]);
+    if (!rawData || !columns || !channelFunnel.length || !totals) return "";
+    return buildDataContext(rawData, columns, channelFunnel, totals, dropOff);
+  }, [rawData, columns, channelFunnel, totals, dropOff]);
 
   const applyParsed = useCallback(
     (name: string, data: CsvRow[], hdrs: string[]) => {
