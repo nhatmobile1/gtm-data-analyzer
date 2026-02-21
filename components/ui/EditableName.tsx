@@ -64,8 +64,7 @@ export default function EditableName({
         onKeyDown={handleKeyDown}
         maxLength={maxLength}
         className={`bg-transparent border-b border-accent outline-none ${className}`}
-        style={{ color: "var(--color-text)" }}
-        style={{ width: `${Math.max(draft.length + 1, 4)}ch` }}
+        style={{ color: "var(--color-text)", width: `${Math.max(draft.length + 1, 4)}ch` }}
       />
     );
   }
