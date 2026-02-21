@@ -12,6 +12,8 @@
   --color-negative: #f85149;
   --color-warning: #d29922;
   --color-nurture: #bc8cff;
+  --color-surface-alt: #21262d;
+  --color-accent-dark: #1f6feb;
   --font-sans: var(--font-geist-sans), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), "JetBrains Mono", monospace;
 }

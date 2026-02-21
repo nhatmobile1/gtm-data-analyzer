@@ -143,7 +143,7 @@ export default function AIAnalyst({
             <div
               className={`w-7 h-7 rounded-md flex items-center justify-center text-[13px] shrink-0 mt-0.5 ${
                 msg.role === "user"
-                  ? "bg-[#1f6feb]"
+                  ? "bg-accent-dark"
                   : "bg-surface border border-border"
               }`}
             >
@@ -225,8 +225,8 @@ export default function AIAnalyst({
           disabled={loading || !input.trim()}
           className={`py-2.5 px-4 rounded-lg text-[13px] font-semibold font-sans transition-colors flex items-center gap-1.5 ${
             loading || !input.trim()
-              ? "bg-[#21262d] text-muted cursor-not-allowed"
-              : "bg-[#1f6feb] text-white cursor-pointer hover:bg-accent"
+              ? "bg-surface-alt text-muted cursor-not-allowed"
+              : "bg-accent-dark text-white cursor-pointer hover:bg-accent"
           }`}
         >
           <Send size={14} />
@@ -235,7 +235,7 @@ export default function AIAnalyst({
         {messages.length > 0 && (
           <button
             onClick={onClear}
-            className="bg-[#21262d] border border-border text-muted py-2.5 px-3.5 rounded-lg cursor-pointer text-xs font-sans hover:text-text transition-colors flex items-center gap-1.5"
+            className="bg-surface-alt border border-border text-muted py-2.5 px-3.5 rounded-lg cursor-pointer text-xs font-sans hover:text-text transition-colors flex items-center gap-1.5"
           >
             <Trash2 size={13} />
             <span className="hidden sm:inline">Clear</span>

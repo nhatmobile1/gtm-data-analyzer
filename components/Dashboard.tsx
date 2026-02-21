@@ -58,7 +58,7 @@ export default function Dashboard({
         </div>
         <button
           onClick={onReset}
-          className="bg-[#21262d] border border-border text-muted py-1.5 px-3 rounded-md cursor-pointer text-xs hover:text-text transition-colors flex items-center gap-1.5 shrink-0"
+          className="bg-surface-alt border border-border text-muted py-1.5 px-3 rounded-md cursor-pointer text-xs hover:text-text transition-colors flex items-center gap-1.5 shrink-0"
         >
           <Upload size={13} />
           <span className="hidden sm:inline">Upload New File</span>

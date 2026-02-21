@@ -71,14 +71,14 @@ export default function EditableName({
 
   return (
     <span
-      className={`group/name inline-flex items-center gap-1 cursor-pointer hover:text-accent/80 transition-colors ${className}`}
+      className={`group/name inline-flex items-center gap-1 cursor-pointer hover:text-accent/80 transition-colors text-text ${className}`}
       onClick={() => setEditing(true)}
       title="Click to rename"
     >
       <span className="truncate">{value}</span>
       <Pencil
         size={12}
-        className="opacity-0 group-hover/name:opacity-60 transition-opacity text-muted shrink-0"
+        className="opacity-40 group-hover/name:opacity-70 transition-opacity shrink-0 text-muted"
       />
     </span>
   );
