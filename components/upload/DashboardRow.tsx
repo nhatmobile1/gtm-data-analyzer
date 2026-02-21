@@ -107,7 +107,10 @@ export default function DashboardRow({
   return (
     <div
       className="group flex items-center gap-3 bg-surface/50 border border-border/50 rounded-lg px-3.5 py-2.5 hover:bg-surface hover:border-border transition-colors cursor-pointer"
+      role="button"
+      tabIndex={0}
       onClick={() => !renaming && onSelect(dashboard.id)}
+      onKeyDown={(e) => { if ((e.key === "Enter" || e.key === " ") && !renaming) { e.preventDefault(); onSelect(dashboard.id); } }}
     >
       <BarChart3 size={16} className="text-muted shrink-0" />
       <div className="flex-1 min-w-0">

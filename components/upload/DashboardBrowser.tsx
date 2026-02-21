@@ -192,7 +192,10 @@ export default function DashboardBrowser({
             <div key={folder.id}>
               <div
                 className="flex items-center gap-2.5 bg-surface/30 border border-border/30 rounded-lg px-3.5 py-2.5 cursor-pointer hover:bg-surface/50 transition-colors"
+                role="button"
+                tabIndex={0}
                 onClick={() => toggleFolder(folder.id)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleFolder(folder.id); } }}
               >
                 <ChevronRight
                   size={14}

@@ -46,6 +46,7 @@ export default function FunnelTable({
         <select
           value={selectedDim}
           onChange={(e) => onDimChange(e.target.value)}
+          aria-label="Group by dimension"
           className="bg-surface border border-border text-text py-1.5 px-3 rounded-md text-xs font-sans"
         >
           {allDimOptions.map((d) => (
@@ -63,6 +64,7 @@ export default function FunnelTable({
               {headers.map((h, i) => (
                 <th
                   key={h}
+                  scope="col"
                   className={`${i === 0 ? "text-left" : "text-right"} py-2.5 px-3 text-[10px] uppercase tracking-wide text-muted border-b-2 border-border whitespace-nowrap font-semibold`}
                 >
                   {h}

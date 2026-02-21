@@ -129,6 +129,10 @@ export default function FileUpload({
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
         onClick={() => inputRef.current?.click()}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); inputRef.current?.click(); } }}
+        role="button"
+        tabIndex={0}
+        aria-label="Upload CSV file"
         className={`w-full max-w-lg border-2 border-dashed rounded-lg py-10 sm:py-14 px-6 sm:px-12 text-center cursor-pointer transition-all duration-200 ${
           isDragging
             ? "border-accent bg-accent/[0.04] scale-[1.01]"

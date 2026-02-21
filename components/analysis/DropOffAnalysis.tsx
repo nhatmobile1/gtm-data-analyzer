@@ -97,13 +97,13 @@ export default function DropOffAnalysis({
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  <th className="text-left py-2 px-3.5 text-[10px] uppercase text-muted border-b border-border">
+                  <th scope="col" className="text-left py-2 px-3.5 text-[10px] uppercase text-muted border-b border-border">
                     Segment
                   </th>
-                  <th className="text-right py-2 px-3.5 text-[10px] uppercase text-muted border-b border-border">
+                  <th scope="col" className="text-right py-2 px-3.5 text-[10px] uppercase text-muted border-b border-border">
                     Count
                   </th>
-                  <th className="text-right py-2 px-3.5 text-[10px] uppercase text-muted border-b border-border">
+                  <th scope="col" className="text-right py-2 px-3.5 text-[10px] uppercase text-muted border-b border-border">
                     % of Total
                   </th>
                 </tr>
