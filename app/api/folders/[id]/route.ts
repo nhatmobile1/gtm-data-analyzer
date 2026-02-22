@@ -2,6 +2,14 @@ import { getDb } from "@/db";
 import { folders, dashboards } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
+function toClient(row: typeof folders.$inferSelect) {
+  return {
+    id: row.id,
+    name: row.name,
+    createdAt: row.createdAt instanceof Date ? row.createdAt.toISOString() : String(row.createdAt),
+  };
+}
+
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!process.env.DATABASE_URL) {
     return Response.json({ error: "Database not configured" }, { status: 503 });
@@ -20,7 +28,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     .returning();
 
   if (!row) return Response.json({ error: "Not found" }, { status: 404 });
-  return Response.json(row);
+  return Response.json(toClient(row));
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {

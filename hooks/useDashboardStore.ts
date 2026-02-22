@@ -117,11 +117,48 @@ export function useDashboardStore() {
   const [notifications, setNotifications] = useState<string[]>([]);
   // Ref mirrors state for synchronous reads (avoids stale closures)
   const storeRef = useRef<DashboardStore>(emptyStore());
-  // Hydrate from localStorage on mount — standard SSR-safe initialization pattern
+  // Tracks whether server is available for persistence
+  const serverSyncRef = useRef(false);
+
+  // Hydrate: try server first, fall back to localStorage
   useEffect(() => {
-    const loaded = loadFromStorage();
-    storeRef.current = loaded;
-    setStore(loaded); // eslint-disable-line react-hooks/set-state-in-effect
+    let cancelled = false;
+
+    async function init() {
+      try {
+        const [dashRes, folderRes] = await Promise.all([
+          fetch("/api/dashboards"),
+          fetch("/api/folders"),
+        ]);
+
+        if (!cancelled && dashRes.ok && folderRes.ok) {
+          const serverDashboards: DashboardEntry[] = await dashRes.json();
+          const serverFolders: DashboardFolder[] = await folderRes.json();
+          const loaded: DashboardStore = {
+            version: 2,
+            dashboards: serverDashboards,
+            folders: serverFolders,
+          };
+          storeRef.current = loaded;
+          setStore(loaded);
+          saveToStorage(loaded);
+          serverSyncRef.current = true;
+          return;
+        }
+      } catch {
+        // Server unavailable — fall through to localStorage
+      }
+
+      // Fallback to localStorage
+      if (!cancelled) {
+        const loaded = loadFromStorage();
+        storeRef.current = loaded;
+        setStore(loaded);
+      }
+    }
+
+    init();
+    return () => { cancelled = true; };
   }, []);
 
   const update = useCallback(
@@ -132,6 +169,40 @@ export function useDashboardStore() {
         saveToStorage(next);
         return next;
       });
+    },
+    []
+  );
+
+  // ── Server sync helpers (fire-and-forget) ──
+
+  const serverPost = useCallback(
+    (url: string, body: unknown) => {
+      if (!serverSyncRef.current) return;
+      fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }).catch(() => {});
+    },
+    []
+  );
+
+  const serverPut = useCallback(
+    (url: string, body: unknown) => {
+      if (!serverSyncRef.current) return;
+      fetch(url, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }).catch(() => {});
+    },
+    []
+  );
+
+  const serverDelete = useCallback(
+    (url: string) => {
+      if (!serverSyncRef.current) return;
+      fetch(url, { method: "DELETE" }).catch(() => {});
     },
     []
   );
@@ -149,6 +220,8 @@ export function useDashboardStore() {
 
       if (existing) {
         entry = { ...existing, csvText, rowCount, updatedAt: now };
+        // Update existing on server
+        serverPut(`/api/dashboards/${existing.id}`, { csvText, rowCount });
       } else {
         entry = {
           id: crypto.randomUUID(),
@@ -160,6 +233,16 @@ export function useDashboardStore() {
           csvText,
           folderId: null,
         };
+        // Create new on server (send client-generated ID)
+        serverPost("/api/dashboards", {
+          id: entry.id,
+          name: entry.name,
+          fileName: entry.fileName,
+          csvText,
+          columns: {},
+          rowCount,
+          folderId: null,
+        });
       }
 
       update((prev) => {
@@ -184,21 +267,23 @@ export function useDashboardStore() {
 
       return entry;
     },
-    [update]
+    [update, serverPost, serverPut]
   );
 
   const removeDashboard = useCallback(
     (id: string) => {
+      serverDelete(`/api/dashboards/${id}`);
       update((prev) => ({
         ...prev,
         dashboards: prev.dashboards.filter((d) => d.id !== id),
       }));
     },
-    [update]
+    [update, serverDelete]
   );
 
   const renameDashboard = useCallback(
     (id: string, newName: string) => {
+      serverPut(`/api/dashboards/${id}`, { name: newName });
       update((prev) => ({
         ...prev,
         dashboards: prev.dashboards.map((d) =>
@@ -208,11 +293,12 @@ export function useDashboardStore() {
         ),
       }));
     },
-    [update]
+    [update, serverPut]
   );
 
   const moveDashboard = useCallback(
     (id: string, folderId: string | null) => {
+      serverPut(`/api/dashboards/${id}`, { folderId });
       update((prev) => ({
         ...prev,
         dashboards: prev.dashboards.map((d) =>
@@ -222,7 +308,7 @@ export function useDashboardStore() {
         ),
       }));
     },
-    [update]
+    [update, serverPut]
   );
 
   const getDashboard = useCallback(
@@ -242,17 +328,19 @@ export function useDashboardStore() {
         name,
         createdAt: new Date().toISOString(),
       };
+      serverPost("/api/folders", { id: folder.id, name: folder.name });
       update((prev) => ({
         ...prev,
         folders: [...prev.folders, folder],
       }));
       return folder;
     },
-    [update]
+    [update, serverPost]
   );
 
   const renameFolder = useCallback(
     (id: string, newName: string) => {
+      serverPut(`/api/folders/${id}`, { name: newName });
       update((prev) => ({
         ...prev,
         folders: prev.folders.map((f) =>
@@ -260,11 +348,12 @@ export function useDashboardStore() {
         ),
       }));
     },
-    [update]
+    [update, serverPut]
   );
 
   const removeFolder = useCallback(
     (id: string) => {
+      serverDelete(`/api/folders/${id}`);
       update((prev) => ({
         ...prev,
         folders: prev.folders.filter((f) => f.id !== id),
@@ -273,7 +362,7 @@ export function useDashboardStore() {
         ),
       }));
     },
-    [update]
+    [update, serverDelete]
   );
 
   const clearNotification = useCallback((index: number) => {
@@ -283,6 +372,16 @@ export function useDashboardStore() {
   // ── Bulk ──
 
   const clearAll = useCallback(() => {
+    // Delete all from server
+    if (serverSyncRef.current) {
+      const current = storeRef.current;
+      for (const d of current.dashboards) {
+        fetch(`/api/dashboards/${d.id}`, { method: "DELETE" }).catch(() => {});
+      }
+      for (const f of current.folders) {
+        fetch(`/api/folders/${f.id}`, { method: "DELETE" }).catch(() => {});
+      }
+    }
     const next = emptyStore();
     storeRef.current = next;
     setStore(next);
@@ -296,12 +395,12 @@ export function useDashboardStore() {
     if (current.dashboards.length === 0 && current.folders.length === 0) return false;
 
     try {
-      // Upload folders first
+      // Upload folders first (send client IDs to preserve relationships)
       for (const folder of current.folders) {
         await fetch("/api/folders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: folder.name }),
+          body: JSON.stringify({ id: folder.id, name: folder.name }),
         });
       }
 
@@ -311,28 +410,62 @@ export function useDashboardStore() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            id: dashboard.id,
             name: dashboard.name,
             fileName: dashboard.fileName,
             csvText: dashboard.csvText,
             columns: {},
             rowCount: dashboard.rowCount,
-            folderId: null, // Folder IDs won't match server-side
+            folderId: dashboard.folderId,
           }),
         });
       }
 
-      // Clear localStorage after migration
-      clearAll();
+      serverSyncRef.current = true;
       return true;
     } catch {
       return false;
     }
-  }, [clearAll]);
+  }, []);
 
   // ── Import ──
 
   const importData = useCallback(
     (data: { dashboards: DashboardEntry[]; folders: DashboardFolder[] }) => {
+      // Sync new items to server
+      if (serverSyncRef.current) {
+        const existingIds = new Set(storeRef.current.dashboards.map((d) => d.id));
+        const existingFolderIds = new Set(storeRef.current.folders.map((f) => f.id));
+
+        for (const f of data.folders) {
+          if (!existingFolderIds.has(f.id)) {
+            fetch("/api/folders", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ id: f.id, name: f.name }),
+            }).catch(() => {});
+          }
+        }
+
+        for (const d of data.dashboards) {
+          if (!existingIds.has(d.id)) {
+            fetch("/api/dashboards", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                id: d.id,
+                name: d.name,
+                fileName: d.fileName,
+                csvText: d.csvText,
+                columns: {},
+                rowCount: d.rowCount,
+                folderId: d.folderId,
+              }),
+            }).catch(() => {});
+          }
+        }
+      }
+
       update((prev) => {
         const existingIds = new Set(prev.dashboards.map((d) => d.id));
         const newDashboards = data.dashboards.filter((d) => !existingIds.has(d.id));
