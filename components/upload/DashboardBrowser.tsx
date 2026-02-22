@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import {
-  LayoutGrid,
   FolderPlus,
   Trash2,
   ChevronRight,
@@ -65,7 +64,7 @@ export default function DashboardBrowser({
 
   if (dashboards.length === 0 && folders.length === 0) {
     return (
-      <div className="w-full max-w-lg mt-6 text-center py-8 text-muted text-sm">
+      <div className="w-full text-center py-8 text-muted text-sm">
         No saved dashboards yet. Upload a CSV to get started.
       </div>
     );
@@ -108,37 +107,31 @@ export default function DashboardBrowser({
 
   return (
     <div
-      className="w-full max-w-lg mt-6"
+      className="w-full max-w-lg mt-4"
       style={{ animation: "fade-in-up 0.5s ease-out 0.15s both" }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2 text-sm text-muted">
-          <LayoutGrid size={14} />
-          <span>Saved Dashboards</span>
-          <span className="text-xs opacity-60">({dashboards.length})</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <ExportImport
-            dashboards={dashboards}
-            folders={folders}
-            onImport={onImport}
-          />
-          <button
-            onClick={() => setCreatingFolder(true)}
-            className="flex items-center gap-1.5 text-xs text-accent hover:text-accent/80 transition-colors cursor-pointer"
-          >
-            <FolderPlus size={12} />
-            New Folder
-          </button>
-          <button
-            onClick={() => setShowClearConfirm(true)}
-            className="flex items-center gap-1.5 text-xs text-muted hover:text-negative transition-colors cursor-pointer"
-          >
-            <Trash2 size={12} />
-            Clear all
-          </button>
-        </div>
+      {/* Actions bar */}
+      <div className="flex items-center gap-2 mb-3">
+        <button
+          onClick={() => setCreatingFolder(true)}
+          className="flex items-center gap-1.5 text-xs text-accent hover:text-accent/80 transition-colors cursor-pointer py-1.5 px-2.5 rounded-md bg-surface-alt border border-border"
+        >
+          <FolderPlus size={12} />
+          New Folder
+        </button>
+        <ExportImport
+          dashboards={dashboards}
+          folders={folders}
+          onImport={onImport}
+        />
+        <div className="flex-1" />
+        <button
+          onClick={() => setShowClearConfirm(true)}
+          className="flex items-center gap-1.5 text-xs text-muted hover:text-negative transition-colors cursor-pointer py-1.5 px-2.5"
+        >
+          <Trash2 size={12} />
+          Clear all
+        </button>
       </div>
 
       <div className="flex flex-col gap-1.5">
