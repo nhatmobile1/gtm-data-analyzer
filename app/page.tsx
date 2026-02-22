@@ -148,6 +148,17 @@ export default function Home() {
         dashboardName={dashboardName}
         onRenameDashboard={handleRenameDashboard}
         onReset={handleReset}
+        dashboards={store.dashboards}
+        folders={store.folders}
+        onDashboardSelect={handleDashboardSelect}
+        onDashboardRemove={store.removeDashboard}
+        onDashboardRename={store.renameDashboard}
+        onDashboardMove={store.moveDashboard}
+        onFolderCreate={store.createFolder}
+        onFolderRename={store.renameFolder}
+        onFolderRemove={store.removeFolder}
+        onClearAll={store.clearAll}
+        onImport={store.importData}
       />
     </>
   );

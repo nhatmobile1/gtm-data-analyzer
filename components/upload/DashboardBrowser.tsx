@@ -63,7 +63,13 @@ export default function DashboardBrowser({
     if (renamingFolderId) folderRenameRef.current?.select();
   }, [renamingFolderId]);
 
-  if (dashboards.length === 0 && folders.length === 0) return null;
+  if (dashboards.length === 0 && folders.length === 0) {
+    return (
+      <div className="w-full max-w-lg mt-6 text-center py-8 text-muted text-sm">
+        No saved dashboards yet. Upload a CSV to get started.
+      </div>
+    );
+  }
 
   const toggleFolder = (id: string) => {
     setCollapsed((prev) => {

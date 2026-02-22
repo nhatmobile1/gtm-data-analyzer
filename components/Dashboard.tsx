@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { BarChart3, Upload } from "lucide-react";
+import { BarChart3, Upload, FolderOpen } from "lucide-react";
 import { formatNumber } from "@/lib/formatting";
 import { useAIChat } from "@/hooks/useAIChat";
 import type { useAnalysis } from "@/hooks/useAnalysis";
+import type { DashboardEntry, DashboardFolder } from "@/lib/types";
 import EditableName from "@/components/ui/EditableName";
 import TabBar from "@/components/ui/TabBar";
+import SidebarDrawer from "@/components/ui/SidebarDrawer";
+import DashboardBrowser from "@/components/upload/DashboardBrowser";
 import KPIRow from "@/components/analysis/KPIRow";
 import FunnelTable from "@/components/analysis/FunnelTable";
 import Charts from "@/components/analysis/Charts";
@@ -29,6 +32,17 @@ interface DashboardProps {
   dashboardName: string;
   onRenameDashboard: (newName: string) => void;
   onReset: () => void;
+  dashboards: DashboardEntry[];
+  folders: DashboardFolder[];
+  onDashboardSelect: (id: string) => void;
+  onDashboardRemove: (id: string) => void;
+  onDashboardRename: (id: string, newName: string) => void;
+  onDashboardMove: (id: string, folderId: string | null) => void;
+  onFolderCreate: (name: string) => void;
+  onFolderRename: (id: string, newName: string) => void;
+  onFolderRemove: (id: string) => void;
+  onClearAll: () => void;
+  onImport: (data: { dashboards: DashboardEntry[]; folders: DashboardFolder[] }) => void;
 }
 
 export default function Dashboard({
@@ -36,9 +50,26 @@ export default function Dashboard({
   dashboardName,
   onRenameDashboard,
   onReset,
+  dashboards,
+  folders,
+  onDashboardSelect,
+  onDashboardRemove,
+  onDashboardRename,
+  onDashboardMove,
+  onFolderCreate,
+  onFolderRename,
+  onFolderRemove,
+  onClearAll,
+  onImport,
 }: DashboardProps) {
   const [activeTab, setActiveTab] = useState("ai");
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const aiChat = useAIChat(analysis.dataContext);
+
+  const handleDrawerSelect = (id: string) => {
+    onDashboardSelect(id);
+    setDrawerOpen(false);
+  };
 
   return (
     <div className="min-h-screen text-[13px]" style={{ animation: "fade-in 0.3s ease-out both" }}>
@@ -56,14 +87,24 @@ export default function Dashboard({
             {formatNumber(analysis.rawData?.length ?? 0)} records
           </span>
         </div>
-        <button
-          onClick={onReset}
-          className="bg-surface-alt border border-border text-muted py-1.5 px-3 rounded-md cursor-pointer text-xs hover:text-text transition-colors flex items-center gap-1.5 shrink-0"
-        >
-          <Upload size={13} />
-          <span className="hidden sm:inline">Upload New File</span>
-          <span className="sm:hidden">New</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className="bg-surface-alt border border-border text-muted py-1.5 px-3 rounded-md cursor-pointer text-xs hover:text-text transition-colors flex items-center gap-1.5 shrink-0"
+            title="Manage dashboards"
+          >
+            <FolderOpen size={13} />
+            <span className="hidden sm:inline">Dashboards</span>
+          </button>
+          <button
+            onClick={onReset}
+            className="bg-surface-alt border border-border text-muted py-1.5 px-3 rounded-md cursor-pointer text-xs hover:text-text transition-colors flex items-center gap-1.5 shrink-0"
+          >
+            <Upload size={13} />
+            <span className="hidden sm:inline">Upload New File</span>
+            <span className="sm:hidden">New</span>
+          </button>
+        </div>
       </div>
 
       {/* Mobile file info */}
@@ -139,6 +180,27 @@ export default function Dashboard({
           )}
         </div>
       </div>
+
+      {/* Dashboard management drawer */}
+      <SidebarDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        title="Manage Dashboards"
+      >
+        <DashboardBrowser
+          dashboards={dashboards}
+          folders={folders}
+          onDashboardSelect={handleDrawerSelect}
+          onDashboardRemove={onDashboardRemove}
+          onDashboardRename={onDashboardRename}
+          onDashboardMove={onDashboardMove}
+          onFolderCreate={onFolderCreate}
+          onFolderRename={onFolderRename}
+          onFolderRemove={onFolderRemove}
+          onClearAll={onClearAll}
+          onImport={onImport}
+        />
+      </SidebarDrawer>
     </div>
   );
 }
