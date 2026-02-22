@@ -74,7 +74,7 @@ export default function Dashboard({
   return (
     <div className="min-h-screen text-[13px]" style={{ animation: "fade-in 0.3s ease-out both" }}>
       {/* Header */}
-      <div className="py-3 sm:py-4 px-4 sm:px-6 border-b border-border flex items-center justify-between gap-3">
+      <div className="sticky top-0 z-40 bg-base py-3 sm:py-4 px-4 sm:px-6 border-b border-border flex items-center justify-between gap-3">
         <div className="flex items-center gap-1.5 min-w-0">
           <BarChart3 size={18} className="text-accent shrink-0" />
           <EditableName
@@ -108,7 +108,7 @@ export default function Dashboard({
       </div>
 
       {/* Mobile file info */}
-      <div className="sm:hidden px-4 py-2 text-xs text-muted border-b border-border">
+      <div className="sm:hidden sticky top-[49px] z-30 bg-base px-4 py-2 text-xs text-muted border-b border-border">
         {analysis.fileName} &middot; {formatNumber(analysis.rawData?.length ?? 0)} records
       </div>
 

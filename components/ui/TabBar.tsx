@@ -44,7 +44,7 @@ export default function TabBar({ tabs, activeTab, onTabChange }: TabBarProps) {
   return (
     <div
       ref={wrapperRef}
-      className={`tab-scroll-wrapper border-b border-border ${hasOverflow ? "has-overflow" : ""}`}
+      className={`tab-scroll-wrapper sticky top-[82px] sm:top-[57px] z-30 bg-base border-b border-border ${hasOverflow ? "has-overflow" : ""}`}
     >
       <div
         ref={scrollRef}
