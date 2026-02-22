@@ -18,6 +18,13 @@ export const dashboards = pgTable("dashboards", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const dashboardRows = pgTable("dashboard_rows", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  dashboardId: text("dashboard_id").references(() => dashboards.id, { onDelete: "cascade" }).notNull(),
+  rowNum: integer("row_num").notNull(),
+  data: jsonb("data").notNull(),
+});
+
 export const aiConversations = pgTable("ai_conversations", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   dashboardId: text("dashboard_id").references(() => dashboards.id, { onDelete: "cascade" }).notNull(),

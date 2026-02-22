@@ -22,12 +22,20 @@ export default function Home() {
       const reader = new FileReader();
       reader.onload = () => {
         const text = reader.result as string;
-        // Use PapaParse for accurate row count (handles CRLF, quoted newlines)
-        const preview = Papa.parse(text, { preview: 0 });
-        const rowCount = Math.max(0, (preview.data as unknown[]).length - 1);
+        const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
+        const rowCount = parsed.data.length;
         const entry = store.saveDashboard(file.name, text, rowCount);
         setActiveDashboardId(entry.id);
         analysis.loadCSVText(file.name, text);
+
+        // Push raw rows to Neon for SQL querying (fire-and-forget)
+        if (rowCount > 0) {
+          fetch(`/api/dashboards/${entry.id}/rows`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ rows: parsed.data }),
+          }).catch(() => {});
+        }
       };
       reader.onerror = () => {
         analysis.setError("Failed to read the file. Please try again.");
