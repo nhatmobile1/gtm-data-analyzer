@@ -108,7 +108,7 @@ export default function Dashboard({
       </div>
 
       {/* Mobile file info */}
-      <div className="sm:hidden sticky top-[49px] z-30 bg-base px-4 py-2 text-xs text-muted border-b border-border">
+      <div className="sm:hidden px-4 py-2 text-xs text-muted border-b border-border">
         {analysis.fileName} &middot; {formatNumber(analysis.rawData?.length ?? 0)} records
       </div>
 
