@@ -28,10 +28,11 @@ export const TOOLTIP_STYLE = {
 export const CURSOR_STYLE = { fill: "rgba(88, 166, 255, 0.06)" } as const;
 
 export const X_AXIS_PROPS = {
-  tick: { fill: CHART_COLORS.textMuted, fontSize: 10 },
+  tick: { fill: CHART_COLORS.textMuted, fontSize: 10, angle: -35, textAnchor: "end" as const },
   axisLine: { stroke: CHART_COLORS.grid },
   tickLine: false,
   interval: 0 as const,
+  height: 60,
 } as const;
 
 export const Y_AXIS_TICK = {

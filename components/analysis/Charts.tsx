@@ -67,7 +67,7 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
             Pipeline by {selectedDim}
           </div>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
+            <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 5, left: 10 }}>
               <XAxis dataKey="name" {...X_AXIS_PROPS} />
               <YAxis
                 tick={Y_AXIS_TICK}
@@ -98,7 +98,7 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
             Touch % vs Pipeline % (Misalignment)
           </div>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
+            <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 5, left: 10 }}>
               <XAxis dataKey="name" {...X_AXIS_PROPS} />
               <YAxis
                 tick={Y_AXIS_TICK}
@@ -147,7 +147,7 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
             Meeting Rate by {selectedDim}
           </div>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
+            <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 5, left: 10 }}>
               <XAxis dataKey="name" {...X_AXIS_PROPS} />
               <YAxis
                 tick={Y_AXIS_TICK}
@@ -190,7 +190,7 @@ export default function Charts({ funnel, totals, selectedDim }: ChartsProps) {
             Pipeline per Touch (Efficiency)
           </div>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 20, left: 10 }}>
+            <BarChart data={chartData} margin={{ top: 5, right: 10, bottom: 5, left: 10 }}>
               <XAxis dataKey="name" {...X_AXIS_PROPS} />
               <YAxis
                 tick={Y_AXIS_TICK}
